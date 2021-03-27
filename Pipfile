@@ -4,6 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+alembic = "*"
+fastapi = "*"
+uvicorn = "*"
+sqlalchemy = "*"
+pydantic = "*"
 
 [dev-packages]
 
