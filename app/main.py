@@ -20,10 +20,10 @@ origins = [
     "http://localhost:3000",
 ]
 
-@app.on_event("startup")
-def init_data():
-    db = SessionLocal()
-    init_db(db)
+# @app.on_event("startup")
+# def init_data():
+#     db = SessionLocal()
+#     init_db(db)
 
 app.add_middleware(
     CORSMiddleware,
