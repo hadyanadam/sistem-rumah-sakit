@@ -1,0 +1,176 @@
+{% extends 'index.html' %}
+
+
+{% block content %}
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">Management User</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item">User Management</li>
+              <li class="breadcrumb-item active">{{ nama }}</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12 col-lg-12">
+                        <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Add {{ nama }}</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form role="form">
+                <div class="card-body">
+                  <div class="col-12 col-lg-12">
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Email</label>
+                      <input type="email" class="form-control" name="username" placeholder="Masukan email">
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputPassword1">Password</label>
+                      <input type="password" class="form-control" name="password" placeholder="Password">
+                    </div>
+                  </div>
+                  {% block input_form %}
+                  <div class="row">
+                    <div class="col-6 col-lg-6">
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Nama {{ nama }}</label>
+                        <input type="text" class="form-control" name="nama" placeholder="Masukan Nama"">
+                      </div>
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Alamat</label>
+                        <textarea type="text" class="form-control" row="3" placeholder="Masukan Alamat"></textarea>
+                      </div>
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">No telp</label>
+                        <input type="number" class="form-control" name="nama" placeholder="Masukan No Telp"">
+                      </div>
+                    </div>
+                      <div class="col-6 col-lg-6">
+                      <label for="exampleInputEmail1">Tempat Tanggal Lahir</label>
+                        <div class="row">
+                          <div class="form-group col-6 col-lg-6">
+                            <input type="text" class="form-control" name="tempat_lahir" placeholder="Masukan Tempat Lahir">
+                          </div>
+                          <div class="form-group col-6 col-lg-6">
+                            <div class="input-group">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                              </div>
+                              <input type="text" class="form-control" data-inputmask-alias="datetime" name='tanggal_lahir' data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label>Poli</label>
+                          <select class="form-control" name="poli">
+                            <option value="">-</option>
+                            <option value="Poli Umum">Poli Umum</option>
+                            <option value="Poli Gigi">Poli Gigi</option>
+                            <option value="Poli Penyakit Dalam">Poli Gigi</option>
+                            <option value="Poli Anak">Poli Anak</option>
+                            <option value="Poli Kandungan">Poli Kandungan</option>
+                          </select>
+                        </div>
+                      </div>
+                  </div>
+                  {% endblock input_form %}
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+              </form>
+            </div>
+            <!-- /.card -->
+          </div>
+          <div class="col-lg-12 col-12">
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Daftar {{ nama }}</h2>
+                <div class="btn btn-primary float-right">Add</div>
+              </div>
+              <!-- /.card-header -->
+              {% block table_list %}
+              <div class="card-body p-0">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th style="width: 10px">#</th>
+                      <th>Nama</th>
+                      <th>Alamat</th>
+                      <th>No Telp</th>
+                      <th>Poli</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for dokter in dokter_list %}
+                      <tr>
+                        <td>{{dokter.id}}.</td>
+                        <td>{{dokter.nama}}</td>
+                        <td>{{dokter.alamat}}</td>
+                        <td>{{dokter.no_hp}}</td>
+                        <td>{{dokter.poli}}</td>
+                        <td><span class="badge bg-danger">delete</span></td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% endblock table_list %}
+              <!-- /.card-body -->
+              <div class="card-tools mt-2 ml-4">
+                <ul class="pagination pagination-sm">
+                  <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
+                  <li class="page-item"><a class="page-link" href="#">1</a></li>
+                  <li class="page-item"><a class="page-link" href="#">2</a></li>
+                  <li class="page-item"><a class="page-link" href="#">3</a></li>
+                  <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- /.card -->
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+ 
+{% endblock content %}
+
+
+{% block addscript %}
+
+<script src="{{ url_for('static', path='plugins/moment/moment.min.js') }}"></script>
+<script src="{{ url_for('static', path='plugins/inputmask/min/jquery.inputmask.bundle.min.js') }}"></script>
+<script>
+  $(function () {
+    //Datemask dd/mm/yyyy
+    $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' })
+    //Datemask2 mm/dd/yyyy
+    $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' })
+    //Money Euro
+    $('[data-mask]').inputmask()
+
+  })
+</script>
+{% endblock addscript %}
+  

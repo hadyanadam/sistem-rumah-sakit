@@ -1,0 +1,69 @@
+{% extends 'pages/admin/user.html' %}
+
+
+{% block input_form %}
+<div class="row">
+  <div class="col-6 col-lg-6">
+    <div class="form-group">
+      <label for="exampleInputEmail1">Nama {{ nama }}</label>
+      <input type="text" class="form-control" name="nama" placeholder="Masukan Nama"">
+    </div>
+    <div class="form-group">
+      <label for="exampleInputPassword1">Alamat</label>
+      <textarea type="text" class="form-control" row="3" placeholder="Masukan Alamat"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">No telp</label>
+      <input type="number" class="form-control" name="no_hp" placeholder="Masukan No Telp"">
+    </div>
+  </div>
+    <div class="col-6 col-lg-6">
+    <label for="exampleInputEmail1">Tempat Tanggal Lahir</label>
+      <div class="row">
+        <div class="form-group col-6 col-lg-6">
+          <input type="text" class="form-control" name="tempat_lahir" placeholder="Masukan Tempat Lahir">
+        </div>
+        <div class="form-group col-6 col-lg-6">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+            </div>
+            <input type="text" class="form-control" data-inputmask-alias="datetime" name='tanggal_lahir' data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputEmail1">RFID</label>
+        <input type="number" class="form-control" name="rfid" placeholder="Masukan RFID number"">
+      </div>
+    </div>
+</div>
+{% endblock input_form %}
+
+
+{% block tabel_list %}
+  <div class="card-body p-0">
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width: 10px">#</th>
+          <th>Nama</th>
+          <th>Alamat</th>
+          <th>No Telp</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pasien in pasien_list %}
+        <tr>
+          <td>{{pasien.id}}.</td>
+          <td>{{pasien.nama}}</td>
+          <td>{{pasien.alamat}}</td>
+          <td>{{pasien.no_hp}}</td>
+          <td><span class="badge bg-danger">delete</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock tabel_list %}

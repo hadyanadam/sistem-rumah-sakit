@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Sistem Rumah Sakit</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% include 'components/styles.html' %}
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  {% include 'components/navbar.html' %}
+
+  {% include 'components/sidebar.html' %}
+
+  {% block content %}
+
+    {% include 'components/content.html' %}
+
+  {% endblock %}
+
+  {% include 'components/footer.html' %}
+
+  {% include 'components/scripts.html' %}
+
+  {% block addscript %}
+  
+  {% endblock addscript %}
+    
+</div>
+<!-- ./wrapper -->
+
+</body>
+</html>

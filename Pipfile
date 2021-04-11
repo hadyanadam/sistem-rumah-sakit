@@ -8,9 +8,21 @@ alembic = "*"
 fastapi = "*"
 uvicorn = "*"
 sqlalchemy = "*"
-pydantic = "*"
+pydantic = {extras = ["dotenv", "email"], version = "*"}
+passlib = {extras = ["bcrypt"], version = "*"}
+python-jose = "*"
+psycopg2 = "*"
+python-multipart = "*"
+jinja2 = "*"
+aiofiles = "*"
+requests = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.8"
+
+[scripts]
+db = "docker-compose up -d db"
+docker-stop = "docker-compose down"
+start = "cd app && uvicorn main:app --reload"
