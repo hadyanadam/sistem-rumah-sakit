@@ -11,5 +11,4 @@ RUN pip install -r ./requirements.txt
 
 COPY . /app
 
-RUN alembic upgrade head
-# ENTRYPOINT [ "/app/entrypoint.sh" ]
+ENTRYPOINT [ "./entrypoint.sh" ]
