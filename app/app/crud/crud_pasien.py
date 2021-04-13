@@ -7,6 +7,10 @@ from ..models.pasien import Pasien
 from ..schemas.pasien import PasienCreate, PasienUpdate
 
 class CRUDPasien(CRUDBase[Pasien, PasienCreate, PasienUpdate]):
+  def get_by_rfid(self,db:Session, *, rfid:str) -> Pasien:
+      pasien = db.query(self.model).filter(self.model.rfid == rfid).first()
+      return pasien
+
   def create(self, db: Session, *, obj_in: PasienCreate) -> Pasien:
       data = obj_in.dict(exclude_unset=True)
       db_obj = Pasien(

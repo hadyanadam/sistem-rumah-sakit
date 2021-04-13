@@ -6,7 +6,6 @@ from fastapi import Query
 class User(BaseModel):
   id: int
   username: str
-  password: str
   is_active: bool
   is_admin: bool
 

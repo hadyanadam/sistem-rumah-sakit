@@ -18,7 +18,7 @@
           <i class="fa fa-user-circle elevation-2 fa-x2" alt="user image" style="background-color: white;;" aria-hidden="true"></i>
         </div>
         <div class="info">
-          <a href="#" class="d-block">{% block username %} Alexander Pierce {% endblock %}</a>
+          <a href="#" class="d-block">{{ user.username }}</a>
         </div>
       </div>
 
@@ -27,14 +27,16 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-          <li class="nav-item">
-            <a href="{{ url_for('antrian') }}" class="nav-link {{ antrian_sidebar_link_active }}">
-              <i class="fa fa-calendar nav-icon" aria-hidden="true"></i>
-              <p>
-                Antrian
-              </p>
-            </a>
-          </li>
+          {% if user.is_admin %}
+            <li class="nav-item">
+              <a href="{{ url_for('antrian') }}" class="nav-link {{ antrian_sidebar_link_active }}">
+                <i class="fa fa-calendar nav-icon" aria-hidden="true"></i>
+                <p>
+                  Antrian
+                </p>
+              </a>
+            </li>
+          {% endif %}
           <li class="nav-item">
             <a href="{{ url_for('rekam-medis') }}" class="nav-link {{ rekam_sidebar_link_active }}">
               <i class="fa fa-address-book nav-icon" aria-hidden="true"></i>
@@ -52,12 +54,14 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="{{ url_for('dokter') }}" class="nav-link {{ dokter_sidebar_link_active }}">
-                  <i class="fa fa-medkit nav-icon" aria-hidden="true"></i>
-                  <p>Dokter</p>
-                </a>
-              </li>
+              {% if user.is_admin %}
+                <li class="nav-item">
+                  <a href="{{ url_for('dokter') }}" class="nav-link {{ dokter_sidebar_link_active }}">
+                    <i class="fa fa-medkit nav-icon" aria-hidden="true"></i>
+                    <p>Dokter</p>
+                  </a>
+                </li>
+              {% endif %}
               <li class="nav-item">
                   <a href="{{ url_for('pasien') }}" class="nav-link {{ pasien_sidebar_link_active }}">
                   <i class="fa fa-plus-square nav-icon" aria-hidden="true"></i>

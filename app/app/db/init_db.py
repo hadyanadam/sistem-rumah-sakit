@@ -3,6 +3,8 @@ from ..crud.crud_user import crud_user
 from ..schemas.user import UserCreate
 from ..core.config import settings
 from . import base  # noqa: F401
+from ..models.rfid_temporary import RFIDTemporary
+
 
 def init_db(db: Session) -> None:
 
@@ -14,3 +16,13 @@ def init_db(db: Session) -> None:
         is_admin=True,
     )
     crud_user.create(db, obj_in=user_in)
+
+  rfid_temporary = db.query(RFIDTemporary).filter(RFIDTemporary.id == 1).first()
+  if not rfid_temporary:
+    rfid = RFIDTemporary(
+      rfid='12345789',
+      aktif=False
+    )
+    db.add(rfid)
+    db.commit()
+    db.refresh(rfid)

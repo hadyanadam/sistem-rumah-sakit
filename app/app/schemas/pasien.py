@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import Optional
-from datetime import datetime
+from datetime import date, datetime
 from fastapi import Query
 
 class Pasien(BaseModel):
@@ -8,16 +8,27 @@ class Pasien(BaseModel):
   nama: str
   alamat: str
   tempat_lahir: str
-  tanggal_lahir: datetime
+  tanggal_lahir: date
   no_hp: str
   bpjs: bool
   rfid: str
 
 class PasienCreate(Pasien):
+  id: Optional[int]
   nama: str = Query(..., max_length=60)
   alamat: str = Query(..., max_length=130)
   tempat_lahir: str = Query(..., max_length=20)
+  tanggal_lahir: str
   no_hp: str = Query(..., max_length= 15)
+  class Config:
+    json_encoders = {
+      date: lambda v: v.isoformat(),
+    }
+
+  @classmethod
+  @validator('tanggal_lahir', pre=True)
+  def time_validate(cls, v):
+    return date.fromisoformat(v)
 
 class PasienUpdate(Pasien):
   nama: Optional[str] = Query(..., max_length=60)

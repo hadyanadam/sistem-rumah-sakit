@@ -11,6 +11,7 @@ from app.pages import router as PagesRouter
 from app.db.init_db import init_db
 from app.db.session import SessionLocal
 
+
 app = FastAPI()
 
 app.mount('/static', StaticFiles(directory="app/static"), name="static")

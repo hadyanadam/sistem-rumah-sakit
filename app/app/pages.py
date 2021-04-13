@@ -1,5 +1,6 @@
 import requests
-from fastapi import APIRouter, Request, status, Depends, HTTPException, Response, Cookie
+import json
+from fastapi import APIRouter, Request, status, Depends, HTTPException, Response, Cookie, Form
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from starlette.routing import Route, Mount
@@ -8,8 +9,10 @@ from starlette.templating import Jinja2Templates
 from datetime import timedelta
 from .core.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
 
+from .schemas.user import UserRetrieve
 from .crud.crud_user import crud_user
 from .crud.crud_dokter import crud_dokter
+from .crud.crud_pasien import crud_pasien
 from .dependencies import check_for_login, get_db_session
 
 router = APIRouter()
@@ -47,8 +50,8 @@ async def logout():
   response.delete_cookie(key="access_token")
   return response
 
-@router.get('/antrian', response_class=HTMLResponse, name='antrian', dependencies=[Depends(crud_user.get_current_user_login)])
-async def dashboard(request: Request):
+@router.get('/antrian', response_class=HTMLResponse, name='antrian',)
+async def dashboard(request: Request, user: UserRetrieve = Depends(crud_user.get_current_user_login)):
   antrian_atas = [
     {
       "nama_poli": "Poli Umum",
@@ -78,11 +81,12 @@ async def dashboard(request: Request):
       "request": request,
       "antrian_atas": antrian_atas,
       "antrian_bawah":antrian_bawah,
-      "antrian_sidebar_link_active": 'active'
+      "antrian_sidebar_link_active": 'active',
+      "user": user,
     })
 
-@router.get('/admin/dokter', response_class=HTMLResponse, name='dokter', dependencies=[Depends(crud_user.get_current_user_login)])
-def dokter(request: Request, access_token: str = Cookie(None)):
+@router.get('/admin/dokter', response_class=HTMLResponse, name='dokter')
+def dokter(request: Request, access_token: str = Cookie(None),  user: UserRetrieve = Depends(crud_user.get_current_user_login)):
   print('dokter', access_token)
   response = requests.get(url="http://localhost:8000/api/v1/dokter", headers={
     "Authorization": f"Bearer {access_token}"
@@ -95,32 +99,117 @@ def dokter(request: Request, access_token: str = Cookie(None)):
       "nama": "Dokter",
       "dokter_sidebar_link_active": "active",
       "user_menu_open": "menu-open",
-      "dokter_list": dokter
+      "dokter_list": dokter,
+      "user": user,
     })
 
-@router.get('/admin/pasien', response_class=HTMLResponse, name='pasien', dependencies=[Depends(crud_user.get_current_user_login)])
-def dokter(request: Request, access_token: str = Cookie(None)):
+@router.post('/admin/dokter', name='pasien-create', dependencies=[Depends(crud_user.get_current_user_login)])
+def dokter_create(
+  username: str = Form(...),
+  password: str = Form(...),
+  nama: str = Form(...),
+  alamat: str = Form(...),
+  no_hp: str = Form(...),
+  tempat_lahir: str = Form(...),
+  tanggal_lahir: str = Form(...),
+  poli: str = Form(...),
+  access_token: str = Cookie(None),
+  db: Session = Depends(get_db_session),
+):
+  body= {
+    'username': username,
+    'password': password,
+    'nama': nama,
+    'alamat': alamat,
+    'no_hp': no_hp,
+    'tempat_lahir': tempat_lahir,
+    'tanggal_lahir': tanggal_lahir,
+    'poli': poli,
+  }
+  requests.post('http://localhost:8000/api/v1/dokter', headers={
+    'Authorization': f'Bearer {access_token}',
+    'Content-Type': 'application/json'
+  }, json=body)
+  return RedirectResponse('/admin/dokter', status_code=status.HTTP_302_FOUND)
+
+@router.get('/admin/pasien', response_class=HTMLResponse, name='pasien')
+def pasien(request: Request, access_token: str = Cookie(None),  user: UserRetrieve = Depends(crud_user.get_current_user_login)):
   response = requests.get(url="http://localhost:8000/api/v1/pasien", headers={
     "Authorization": f"Bearer {access_token}"
   })
   pasien = response.json()
+  print(pasien)
   return templates.TemplateResponse(
     'pages/admin/pasien.html', {
       "request":request,
       "nama": "Pasien",
       "pasien_sidebar_link_active": "active",
       "user_menu_open": "menu-open",
-      "pasien_list": pasien
+      "pasien_list": pasien,
+      "user": user,
     })
 
-@router.get('/rekam-medis', response_class=HTMLResponse, name='rekam-medis', dependencies=[Depends(crud_user.get_current_user_login)])
-def rekam_medis(request: Request):
+@router.post('/admin/pasien', name="pasien-create")
+def pasien_create(
+  nama: str = Form(...),
+  alamat: str = Form(...),
+  no_hp: str = Form(...),
+  tempat_lahir: str = Form(...),
+  tanggal_lahir: str = Form(...),
+  rfid: str = Form(...),
+  bpjs: bool = Form(...),
+  db: Session = Depends(get_db_session),
+  access_token: str = Cookie(None)
+):
+  print(bpjs)
+  print(tanggal_lahir)
+  body= {
+    'nama': nama,
+    'alamat': alamat,
+    'no_hp': no_hp,
+    'tempat_lahir': tempat_lahir,
+    'tanggal_lahir': tanggal_lahir,
+    'rfid': rfid,
+    'bpjs': bpjs
+  }
+  requests.post('http://localhost:8000/api/v1/pasien', headers={
+    'Authorization': f'Bearer {access_token}',
+    'Content-Type': 'application/json'
+  }, json=body)
+  return RedirectResponse('/admin/pasien', status_code=status.HTTP_302_FOUND)
+
+@router.get('/rekam-medis', response_class=HTMLResponse, name='rekam-medis')
+def rekam_medis(request: Request, access_token: str = Cookie(None), user: UserRetrieve = Depends(crud_user.get_current_user_login)):
+  response = requests.get(url="http://localhost:8000/api/v1/pasien", headers={
+    "Authorization": f"Bearer {access_token}"
+  })
+  rekam_medis = response.json()
   return templates.TemplateResponse(
     'pages/rekam-medis.html', {
       "request": request,
       "rekam_sidebar_link_active": "active",
+      "user": user,
     }
   )
+
+@router.post('/rekam-medis', name='rekam-medis-create')
+def rekam_medis_create(
+  pasien_id: int = Form(...),
+  dokter_id: int = Form(...),
+  keluhan: str = Form(...),
+  user: UserRetrieve = Depends(crud_user.get_current_user_login),
+  access_token: str = Cookie(None),
+):
+  body= {
+    'pasien_id': pasien_id,
+    'dokter_id': dokter_id,
+    'keluhan': keluhan
+  }
+  requests.post('http://localhost:8000/api/v1/pasien', headers={
+    'Authorization': f'Bearer {access_token}',
+    'Content-Type': 'application/json'
+  }, json=body)
+  return RedirectResponse('/rekam-medis', status_code=status.HTTP_302_FOUND)
 
 @router.get('/404-not-found', name='404-not-found')
 def redirect_404_not_found(request: Request):
