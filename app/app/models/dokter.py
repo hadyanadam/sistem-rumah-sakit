@@ -12,7 +12,7 @@ class Dokter(Base):
   alamat = sa.Column(sa.String(130), nullable=True)
   tempat_lahir = sa.Column(sa.String(20), nullable=True)
   tanggal_lahir = sa.Column(sa.DateTime(timezone=True), nullable=True)
-  no_hp = sa.Column(sa.String(15), nullable=True)
+  no_hp = sa.Column(sa.String(20), nullable=True)
   poli = sa.Column(sa.String(40), nullable=False)
 
   user = relationship('User', backref='dokter')

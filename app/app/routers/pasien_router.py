@@ -27,7 +27,7 @@ async def create_pasien(input_data: PasienCreate, db: Session= Depends(get_db_se
 
 @router.get('/', response_model=List[PasienRetrieve])
 async def retrieve_pasien(db: Session= Depends(get_db_session), current_user: User = Depends(crud_user.get_current_user)):
-  if current_user.is_admin:
+  if current_user.is_admin or current_user.dokter:
     pasien = crud_pasien.get_multi(db=db)
     if len(pasien) == 0:
       raise HTTPException(status_code=status.HTTP_200_OK, detail="no data")
@@ -42,7 +42,7 @@ async def update_pasien(
   db: Session= Depends(get_db_session),
   current_user: User = Depends(crud_user.get_current_user)
 ):
-  if current_user.is_admin:
+  if current_user.is_admin or current_user.dokter:
     pasien = crud_pasien.get(id=id, db=db)
     return crud_pasien.update(db=db, db_obj=pasien, obj_in=input_data)
   else:

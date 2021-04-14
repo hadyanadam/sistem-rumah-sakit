@@ -9,10 +9,9 @@ from ..schemas.pasien import PasienUpdate
 from .crud_pasien import crud_pasien
 
 class CRUDAntrian(CRUDBase[Antrian, AntrianCreate, AntrianUpdate]):
-  def get_by_poli(self, db:Session,*, poli: str) -> List[Antrian]:
-      antrian = db.query(self.model).filter(self.model.poli == poli and self.model.aktif).all()
+  def get_by_poli(self, db:Session,*, limit: int = 100, skip: int = 0) -> List[Antrian]:
+      antrian = db.query(self.model).filter(self.model.aktif).order_by(self.model.asc()).offset(skip).limit(limit).all()
       return antrian
-
 
   def get_by_pasien_antrian_aktif(self, db: Session, *, pasien_id) -> Antrian:
       antrian = db.query(self.model).filter(self.model.pasien_id == pasien_id and self.model.aktif).first()

@@ -19,10 +19,10 @@ class PasienCreate(Pasien):
   alamat: str = Query(..., max_length=130)
   tempat_lahir: str = Query(..., max_length=20)
   tanggal_lahir: str
-  no_hp: str = Query(..., max_length= 15)
+  no_hp: str = Query(..., max_length= 20)
   class Config:
     json_encoders = {
-      date: lambda v: v.isoformat(),
+      date: lambda v: v.strftime("%d %B, %Y"),
     }
 
   @classmethod
@@ -34,7 +34,7 @@ class PasienUpdate(Pasien):
   nama: Optional[str] = Query(..., max_length=60)
   alamat: Optional[str] = Query(..., max_length=130)
   tempat_lahir: Optional[str] = Query(..., max_length=20)
-  no_hp: Optional[str] = Query(..., max_length= 15)
+  no_hp: Optional[str] = Query(..., max_length= 20)
   bpjs: Optional[bool]
   rfid: Optional[str]
 

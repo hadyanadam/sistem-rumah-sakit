@@ -16,17 +16,17 @@ class Dokter(BaseModel):
 class DokterCreate(Dokter):
   id: Optional[int]
   user_id: Optional[int]
-  username: str = Query(..., max_length=20)
+  username: str = Query(..., max_length=50)
   password: str = Query(..., max_length=20, min_length=8)
   nama: str = Query(..., max_length=60)
   alamat: str = Query(..., max_length=130)
   tanggal_lahir: str
   tempat_lahir: str = Query(..., max_length=20)
-  no_hp: str = Query(..., max_length= 15)
+  no_hp: str = Query(..., max_length= 20)
 
   class Config:
     json_encoders = {
-      date: lambda v: v.isoformat(),
+      date: lambda v: v.strftime("%d %B, %Y"),
     }
 
   @classmethod
@@ -43,7 +43,7 @@ class DokterUpdate(Dokter):
   alamat: Optional[str] = Query(..., max_length=130)
   tanggal_lahir: Optional[str]
   tempat_lahir: Optional[str] = Query(..., max_length=20)
-  no_hp: Optional[str] = Query(..., max_length= 15)
+  no_hp: Optional[str] = Query(..., max_length= 20)
   poli: Optional[str]
 
 class DokterRetrieve(Dokter):

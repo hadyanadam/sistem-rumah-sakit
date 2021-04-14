@@ -7,6 +7,10 @@ from ..models.rekam_medis import RekamMedis
 from ..schemas.rekam_medis import RekamMedisCreate, RekamMedisUpdate
 
 class CRUDRekamMedis(CRUDBase[RekamMedis, RekamMedisCreate, RekamMedisUpdate]):
+  def get_by_pasien_id(self, db: Session, *, pasien_id) -> List[RekamMedis]:
+      rekam_medis = db.query(self.model).filter(self.model.pasien_id == pasien_id).all()
+      return rekam_medis
+
   def create(self, db: Session, *, obj_in: RekamMedisCreate) -> RekamMedis:
       data = obj_in.dict(exclude_unset=True)
       db_obj = RekamMedis(

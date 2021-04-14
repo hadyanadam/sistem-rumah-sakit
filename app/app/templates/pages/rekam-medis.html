@@ -9,7 +9,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark">Management User</h1>
+            <h1 class="m-0 text-dark">Rekam Medis</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -25,11 +25,36 @@
     <section class="content">
       <div class="container-fluid">
         <div class="row">
+          <div class="col-12 col-lg-12">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Add Keluhan</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form role="form" action='/rekam-medis/{{ pasien_id }}' method='post'>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-12 col-lg-12">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Keluhan</label>
+                        <textarea type="text" class="form-control" row="4" name="keluhan" placeholder="Tambah keluhan"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+              </form>
+            </div>
+            <!-- /.card -->
+          </div>
           <div class="col-lg-12 col-12">
             <div class="card">
               <div class="card-header">
-                <h2 class="card-title">Daftar {{ nama }}</h2>
-                <div class="btn btn-primary float-right">Add</div>
+                <h2 class="card-title">Daftar Rekam Medis</h2>
               </div>
               <!-- /.card-header -->
               <div class="card-body p-0">
@@ -37,24 +62,24 @@
                   <thead>
                     <tr>
                       <th style="width: 10px">#</th>
-                      <th>Nama</th>
-                      <th>Email</th>
-                      <th>No Telp</th>
-                      <th>Status</th>
-                      <th>Action</th>
+                      <th>Keluhan</th>
                     </tr>
                   </thead>
                   <tbody>
+                    {% if rekam_medis.detail %}
                     <tr>
-                      <td>1.</td>
-                      <td>Update software</td>
-                      <td>
-                        <div class="progress progress-xs">
-                          <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-                        </div>
+                      <td colspan="2" class='text-center'>
+                        no data
                       </td>
-                      <td><span class="badge bg-danger">55%</span></td>
                     </tr>
+                    {% else %}
+                      {% for rm in rekam_medis %}
+                      <tr colspan="3">
+                        <td>{{ loop.index }}</td>
+                        <td>{{ rm.keluhan }}</td>
+                      </tr>
+                      {% endfor %}
+                    {% endif %}
                   </tbody>
                 </table>
               </div>

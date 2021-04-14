@@ -11,7 +11,7 @@ class User(BaseModel):
 
 class UserCreate(User):
   id: Optional[int]
-  username: str = Query(..., max_length=20, min_length=5)
+  username: str = Query(..., max_length=50, min_length=5)
   password: str = Query(..., max_length=20, min_length=8)
   is_active: Optional[bool]
   is_admin: Optional[bool]

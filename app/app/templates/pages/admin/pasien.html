@@ -3,6 +3,14 @@
 
 {% block input_form %}
 {% if user.is_admin %}
+
+<div class="col-12 col-lg-12">
+  <div class="card card-primary">
+    <div class="card-header">
+      <h3 class="card-title">Add {{ nama }}</h3>
+    </div>
+    <!-- /.card-header -->
+    <!-- form start -->
   <form role="form" action="/admin/pasien" method="post">
   <div class="card-body">
   <div class="row">
@@ -37,7 +45,12 @@
         </div>
         <div class="form-group">
           <label for="exampleInputEmail1">RFID</label>
-          <input type="number" class="form-control" name="rfid" placeholder="Masukan RFID number"">
+          <input type="number" class="form-control" name="rfid" {% if rfid.aktif %}
+          value="{{ rfid.rfid }}"
+          {% else %}
+          placeholder="Silahkan Tap Kartu"
+          {% endif %}
+            readonly>
         </div>
         <div class="form-group">
           <label>BPJS</label>
@@ -48,6 +61,14 @@
         </div>
       </div>
   </div>
+  
+  <div class="card-footer">
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </div>
+</form>
+</div>
+<!-- /.card -->
+</div>
 {% endif %}
 {% endblock input_form %}
 
@@ -61,20 +82,42 @@
         <th>Nama</th>
         <th>Alamat</th>
         <th>No Telp</th>
+        <th>TTL</th>
+        <th>BPJS</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
+      {% if pasien_list.detail %}
+        <tr>
+          <td colspan="5" class="text-center">no data</td>
+        </tr>
+      {% else %}
       {% for pasien in pasien_list %}
         <tr>
           <td>{{pasien.id}}.</td>
           <td>{{pasien.nama}}</td>
           <td>{{pasien.alamat}}</td>
+          <td>{{pasien.tempat_lahir}}, {{pasien.tanggal_lahir}}</td>
           <td>{{pasien.no_hp}}</td>
-          <td><span class="badge bg-danger">delete</span></td>
+          {% if pasien.bpjs %}
+            <td><i class="fa fa-check-circle" aria-hidden="true"></i></td>
+          {% else %}
+            <td><i class="fa fa-times-circle" aria-hidden="true"></i></td>
+          {% endif %}
+          <td>
+            {% if user.dokter %}
+              <a href="/rekam-medis/{{ pasien.id }}" class="badge bg-primary">lihat</a>
+            {% endif %}
+            <a href="" class="badge bg-danger">delete</a>
+          </td>
         </tr>
       {% endfor %}
+      {% endif %}
     </tbody>
   </table>
 </div>
 {% endblock %}
+
+
+  

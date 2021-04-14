@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import Optional
 from datetime import datetime
 from fastapi import Query
@@ -23,3 +23,11 @@ class RekamMedisRetrieve(RekamMedis):
 
   class Config:
     orm_mode=True
+    json_encoders = {
+      datetime: lambda v: v.strftime("%d %B, %Y"),
+    }
+
+  @classmethod
+  @validator('tanggal_lahir', pre=True)
+  def time_validate(cls, v):
+    return datetime.fromisoformat(v)

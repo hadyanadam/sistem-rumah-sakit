@@ -27,8 +27,19 @@ async def create_rekam_medis(input_data: RekamMedisCreate, db: Session= Depends(
 
 @router.get('/', response_model=List[RekamMedisRetrieve])
 async def retrieve_rekam_medis(db: Session= Depends(get_db_session), current_user: User = Depends(crud_user.get_current_user)):
-  if current_user.dokter_id is not None:
+  if len(current_user.dokter) == 0 or current_user.is_admin:
     rekam_medis= crud_rekam_medis.get_multi(db=db)
+    if len(rekam_medis) != 0:
+      raise HTTPException(status_code=status.HTTP_200_OK, detail='no data')
+    return rekam_medis
+  else:
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
+@router.get('/{pasien_id}', response_model=List[RekamMedisRetrieve])
+async def retrieve_rekam_medis(pasien_id: int, db: Session= Depends(get_db_session), current_user: User = Depends(crud_user.get_current_user)):
+  print(current_user.dokter)
+  if len(current_user.dokter) != 0 or current_user.is_admin:
+    rekam_medis= crud_rekam_medis.get_by_pasien_id(db=db, pasien_id=pasien_id)
     if len(rekam_medis) == 0:
       raise HTTPException(status_code=status.HTTP_200_OK, detail='no data')
     return rekam_medis

@@ -10,7 +10,12 @@ from app.routers.antrian_router import router as AntrianRouter
 from app.pages import router as PagesRouter
 from app.db.init_db import init_db
 from app.db.session import SessionLocal
-
+from app.seeder import (
+    seed_pasien,
+    seed_rekam_medis,
+    seed_dokter,
+    seed_antrian,
+)
 
 app = FastAPI()
 
@@ -25,6 +30,10 @@ origins = [
 def init_data():
     db = SessionLocal()
     init_db(db)
+    # seed_dokter(iter=10, db=db)
+    # seed_pasien(iter=10, db=db)
+    # seed_antrian(iter=10, db=db, range_pasien_id=[1, 10])
+    # seed_rekam_medis(iter=50, db=db, range_pasien_id=[1,10], range_dokter_id=[2,11])
 
 app.add_middleware(
     CORSMiddleware,

@@ -11,7 +11,7 @@ class Pasien(Base):
   alamat = sa.Column(sa.String(130), nullable=True)
   tempat_lahir = sa.Column(sa.String(30), nullable=True)
   tanggal_lahir = sa.Column(sa.Date, nullable=True)
-  no_hp = sa.Column(sa.String(15), nullable=True)
+  no_hp = sa.Column(sa.String(20), nullable=True)
   bpjs = sa.Column(sa.Boolean, nullable=False, default=False)
   rfid = sa.Column(sa.String(60), nullable=True)
   antrian = relationship('Antrian', backref='pasien')

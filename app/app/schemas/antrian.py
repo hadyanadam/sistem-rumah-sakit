@@ -14,6 +14,7 @@ class AntrianCreate(Antrian):
   id: Optional[int]
   pasien_id: Optional[int]
   poli: str = Query(..., max_length=60)
+  aktif: bool = True
 
 class AntrianUpdate(AntrianCreate):
   pasien_id: Optional[int]

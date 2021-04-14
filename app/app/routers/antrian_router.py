@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, HTTPException, Depends, status
+from fastapi import APIRouter, status, HTTPException, Depends, status, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import List, Union
 from sqlalchemy.orm import Session
@@ -18,7 +18,7 @@ from ..models.rfid_temporary import RFIDTemporary
 
 router = APIRouter(prefix=f'{settings.API_V1_STR}/antrian')
 
-@router.get(
+@router.post(
   '/{rfid}',
   status_code=status.HTTP_201_CREATED,
   response_model=Union[AntrianRetrieve, RFIDSchemas],
@@ -48,10 +48,11 @@ async def retrieve_antrian(db: Session= Depends(get_db_session), current_user: U
   else:
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
-@router.get('/poli', response_model=AntrianRetrieve)
-async def antrian_poli(nama_poli: str, db: Session= Depends(get_db_session), current_user: User = Depends(crud_user.get_current_user)):
+@router.get('/poli', response_model=List[AntrianRetrieve])
+async def antrian_poli(db: Session= Depends(get_db_session), current_user: User = Depends(crud_user.get_current_user)):
   if current_user.is_admin:
-    return crud_antrian.get_by_poli(db=db, poli=nama_poli)
+    return None
+    # return crud_antrian.get_by_poli(db=db)
   else:
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 

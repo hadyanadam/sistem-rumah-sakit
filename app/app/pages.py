@@ -7,8 +7,9 @@ from starlette.routing import Route, Mount
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 from datetime import timedelta
-from .core.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
+from .core.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, verify_password
 
+from .models.rfid_temporary import RFIDTemporary
 from .schemas.user import UserRetrieve
 from .crud.crud_user import crud_user
 from .crud.crud_dokter import crud_dokter
@@ -24,18 +25,26 @@ def redirecting():
   return RedirectResponse(url='/login')
 
 @router.get('/login', response_class=HTMLResponse, name='login')
-async def login(request: Request):
-  return templates.TemplateResponse('pages/login.html', {'request':request})
+async def login(request: Request, error: str = Cookie(None)):
+  context = {
+    'request':request
+  }
+  if error is not None:
+    context.update({"error": error})
+  response = templates.TemplateResponse('pages/login.html', context)
+  response.delete_cookie('error')
+  return response
 
 @router.post("/login", dependencies=[], name='token')
 async def login_for_access_token(db: Session = Depends(get_db_session), form_data: OAuth2PasswordRequestForm = Depends()):
-  user = crud_user.authenticate(db=db, username=form_data.username, password=form_data.password)
+  user = crud_user.get_by_username(db, username=form_data.username)
+  response = RedirectResponse('/login', status_code=status.HTTP_302_FOUND)
   if not user:
-      raise HTTPException(
-          status_code=status.HTTP_401_UNAUTHORIZED,
-          detail="Incorrect username or password",
-          headers={"WWW-Authenticate": "Bearer"},
-      )
+    response.set_cookie(key="error", value="Username salah")
+    return response
+  if not verify_password(form_data.password, user.password):
+    response.set_cookie(key="error", value="Password salah.")
+    return response
   access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
   access_token = await create_access_token(
       data={"sub": user.username}, expires_delta=access_token_expires
@@ -51,7 +60,7 @@ async def logout():
   return response
 
 @router.get('/antrian', response_class=HTMLResponse, name='antrian',)
-async def dashboard(request: Request, user: UserRetrieve = Depends(crud_user.get_current_user_login)):
+def dashboard(request: Request, user: UserRetrieve = Depends(crud_user.get_current_user_login), access_token: str = Cookie(None)):
   antrian_atas = [
     {
       "nama_poli": "Poli Umum",
@@ -76,6 +85,13 @@ async def dashboard(request: Request, user: UserRetrieve = Depends(crud_user.get
       "color": "purple"
     },
   ]
+  antrian = requests.get('http://localhost:8000/api/v1/antrian',
+    headers={
+      "Authorization": f"Bearer {access_token}"
+    },
+    # params={"nama_poli": "Poli Kandungan"}
+  )
+  antrian = antrian.json()
   return templates.TemplateResponse(
     'pages/antrian.html', {
       "request": request,
@@ -83,6 +99,7 @@ async def dashboard(request: Request, user: UserRetrieve = Depends(crud_user.get
       "antrian_bawah":antrian_bawah,
       "antrian_sidebar_link_active": 'active',
       "user": user,
+      "antrian_list": antrian,
     })
 
 @router.get('/admin/dokter', response_class=HTMLResponse, name='dokter')
@@ -92,7 +109,6 @@ def dokter(request: Request, access_token: str = Cookie(None),  user: UserRetrie
     "Authorization": f"Bearer {access_token}"
   })
   dokter = response.json()
-  print(dokter)
   return templates.TemplateResponse(
     'pages/admin/user.html', {
       "request":request,
@@ -133,12 +149,12 @@ def dokter_create(
   return RedirectResponse('/admin/dokter', status_code=status.HTTP_302_FOUND)
 
 @router.get('/admin/pasien', response_class=HTMLResponse, name='pasien')
-def pasien(request: Request, access_token: str = Cookie(None),  user: UserRetrieve = Depends(crud_user.get_current_user_login)):
+def pasien(request: Request, access_token: str = Cookie(None),  user: UserRetrieve = Depends(crud_user.get_current_user_login), db: Session = Depends(get_db_session)):
   response = requests.get(url="http://localhost:8000/api/v1/pasien", headers={
     "Authorization": f"Bearer {access_token}"
   })
   pasien = response.json()
-  print(pasien)
+  rfid = db.query(RFIDTemporary).filter_by(id=1).first()
   return templates.TemplateResponse(
     'pages/admin/pasien.html', {
       "request":request,
@@ -147,6 +163,7 @@ def pasien(request: Request, access_token: str = Cookie(None),  user: UserRetrie
       "user_menu_open": "menu-open",
       "pasien_list": pasien,
       "user": user,
+      "rfid": rfid,
     })
 
 @router.post('/admin/pasien', name="pasien-create")
@@ -178,38 +195,41 @@ def pasien_create(
   }, json=body)
   return RedirectResponse('/admin/pasien', status_code=status.HTTP_302_FOUND)
 
-@router.get('/rekam-medis', response_class=HTMLResponse, name='rekam-medis')
-def rekam_medis(request: Request, access_token: str = Cookie(None), user: UserRetrieve = Depends(crud_user.get_current_user_login)):
-  response = requests.get(url="http://localhost:8000/api/v1/pasien", headers={
+@router.get('/rekam-medis/{pasien_id}', response_class=HTMLResponse, name='rekam-medis')
+def rekam_medis(request: Request, pasien_id: int, access_token: str = Cookie(None), user: UserRetrieve = Depends(crud_user.get_current_user_login)):
+  response = requests.get(url=f"http://localhost:8000/api/v1/rekam-medis/{pasien_id}", headers={
     "Authorization": f"Bearer {access_token}"
   })
   rekam_medis = response.json()
+  print(rekam_medis)
   return templates.TemplateResponse(
     'pages/rekam-medis.html', {
       "request": request,
       "rekam_sidebar_link_active": "active",
       "user": user,
+      "rekam_medis": rekam_medis,
+      "pasien_id": pasien_id
     }
   )
 
-@router.post('/rekam-medis', name='rekam-medis-create')
+@router.post('/rekam-medis/{pasien_id}', name='rekam-medis-create')
 def rekam_medis_create(
-  pasien_id: int = Form(...),
-  dokter_id: int = Form(...),
+  pasien_id: int,
   keluhan: str = Form(...),
   user: UserRetrieve = Depends(crud_user.get_current_user_login),
   access_token: str = Cookie(None),
 ):
+  print(user.dokter)
   body= {
     'pasien_id': pasien_id,
-    'dokter_id': dokter_id,
+    'dokter_id': user.dokter[0].id,
     'keluhan': keluhan
   }
-  requests.post('http://localhost:8000/api/v1/pasien', headers={
+  requests.post('http://localhost:8000/api/v1/rekam-medis', headers={
     'Authorization': f'Bearer {access_token}',
     'Content-Type': 'application/json'
   }, json=body)
-  return RedirectResponse('/rekam-medis', status_code=status.HTTP_302_FOUND)
+  return RedirectResponse(f'/rekam-medis/{pasien_id}', status_code=status.HTTP_302_FOUND)
 
 @router.get('/404-not-found', name='404-not-found')
 def redirect_404_not_found(request: Request):

@@ -26,6 +26,11 @@
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
+      {% if error %}
+       <div class="alert alert-danger fade show" role="alert">
+         {{ error }}
+       </div>
+      {% endif %}
       <p class="login-box-msg">Sign in to start your session</p>
 
       <form action="{{ url_for('token') }}" method="post">

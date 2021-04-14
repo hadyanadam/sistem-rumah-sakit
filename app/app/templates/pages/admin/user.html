@@ -26,6 +26,7 @@
     <section class="content">
       <div class="container-fluid">
         <div class="row">
+          {% block input_form %}
           <div class="col-12 col-lg-12">
             <div class="card card-primary">
               <div class="card-header">
@@ -33,7 +34,6 @@
               </div>
               <!-- /.card-header -->
               <!-- form start -->
-              {% block input_form %}
               <form role="form" action='/admin/dokter' method='post'>
                 <div class="card-body">
                   <div class="col-12 col-lg-12">
@@ -91,8 +91,7 @@
                   </div>
                 </div>
                 <!-- /.card-body -->
-                {% endblock input_form %}
-
+                
                 <div class="card-footer">
                   <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
@@ -100,11 +99,11 @@
             </div>
             <!-- /.card -->
           </div>
+          {% endblock input_form %}
           <div class="col-lg-12 col-12">
             <div class="card">
               <div class="card-header">
                 <h2 class="card-title">Daftar {{ nama }}</h2>
-                <div class="btn btn-primary float-right">Add</div>
               </div>
               <!-- /.card-header -->
               {% block table_list %}
@@ -121,16 +120,22 @@
                     </tr>
                   </thead>
                   <tbody>
+                    {% if dokter_list.detail %}
+                     <tr>
+                       <td colspan="6" class="text-center">no data</td>
+                     </tr>
+                    {% else %}
                     {% for dokter in dokter_list %}
-                      <tr>
-                        <td>{{dokter.id}}.</td>
-                        <td>{{dokter.nama}}</td>
-                        <td>{{dokter.alamat}}</td>
-                        <td>{{dokter.no_hp}}</td>
-                        <td>{{dokter.poli}}</td>
-                        <td><span class="badge bg-danger">delete</span></td>
-                      </tr>
+                    <tr>
+                      <td>{{dokter.id}}.</td>
+                      <td>{{dokter.nama}}</td>
+                      <td>{{dokter.alamat}}</td>
+                      <td>{{dokter.no_hp}}</td>
+                      <td>{{dokter.poli}}</td>
+                      <td><span class="badge bg-danger">delete</span></td>
+                    </tr>
                     {% endfor %}
+                    {% endif %}
                   </tbody>
                 </table>
               </div>
