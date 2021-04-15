@@ -9,6 +9,7 @@ from ..dependencies import get_db_session
 
 from ..models.user import User
 from ..schemas.rekam_medis import RekamMedisCreate, RekamMedisRetrieve, RekamMedisUpdate
+from ..schemas.join import RekamMedisJoinPasien
 from ..crud.crud_rekam_medis import crud_rekam_medis
 from ..crud.crud_user import crud_user
 

@@ -40,7 +40,7 @@ async def create_antrian(rfid: str, input_data: AntrianCreate, db: Session= Depe
 
 @router.get('/', response_model=List[AntrianRetrieve])
 async def retrieve_antrian(db: Session= Depends(get_db_session), current_user: User = Depends(crud_user.get_current_user)):
-  if current_user.is_admin:
+  if current_user.is_admin or current_user.dokter:
     antrian = crud_antrian.get_multi(db=db)
     if len(antrian) == 0:
       raise HTTPException(status_code=status.HTTP_200_OK, detail='no data')
@@ -50,7 +50,7 @@ async def retrieve_antrian(db: Session= Depends(get_db_session), current_user: U
 
 @router.get('/poli', response_model=List[AntrianRetrieve])
 async def antrian_poli(db: Session= Depends(get_db_session), current_user: User = Depends(crud_user.get_current_user)):
-  if current_user.is_admin:
+  if current_user.is_admin or current_user.dokter:
     return None
     # return crud_antrian.get_by_poli(db=db)
   else:

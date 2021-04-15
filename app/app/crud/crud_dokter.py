@@ -11,7 +11,6 @@ from .crud_user import crud_user
 class CRUDDokter(CRUDBase[Dokter, DokterCreate, DokterUpdate]):
   def create(self, db: Session, *, obj_in: DokterCreate) -> Dokter:
       data = obj_in.dict(exclude_unset=True)
-      print(data.get('tanggal_lahir'))
       user_data = UserCreate(
           username=data.pop('username'),
           password=data.pop('password')

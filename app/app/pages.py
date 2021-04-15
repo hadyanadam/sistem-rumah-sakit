@@ -14,6 +14,7 @@ from .schemas.user import UserRetrieve
 from .crud.crud_user import crud_user
 from .crud.crud_dokter import crud_dokter
 from .crud.crud_pasien import crud_pasien
+from .crud.crud_antrian import crud_antrian
 from .dependencies import check_for_login, get_db_session
 
 router = APIRouter()
@@ -196,19 +197,22 @@ def pasien_create(
   return RedirectResponse('/admin/pasien', status_code=status.HTTP_302_FOUND)
 
 @router.get('/rekam-medis/{pasien_id}', response_class=HTMLResponse, name='rekam-medis')
-def rekam_medis(request: Request, pasien_id: int, access_token: str = Cookie(None), user: UserRetrieve = Depends(crud_user.get_current_user_login)):
+def rekam_medis(request: Request, pasien_id: int, db: Session = Depends(get_db_session), access_token: str = Cookie(None), user: UserRetrieve = Depends(crud_user.get_current_user_login)):
   response = requests.get(url=f"http://localhost:8000/api/v1/rekam-medis/{pasien_id}", headers={
     "Authorization": f"Bearer {access_token}"
   })
   rekam_medis = response.json()
+  pasien = crud_pasien.get(id=pasien_id, db=db)
   print(rekam_medis)
+  print(pasien)
   return templates.TemplateResponse(
     'pages/rekam-medis.html', {
       "request": request,
       "rekam_sidebar_link_active": "active",
       "user": user,
       "rekam_medis": rekam_medis,
-      "pasien_id": pasien_id
+      "pasien_id": pasien_id,
+      "pasien": pasien
     }
   )
 
@@ -230,6 +234,19 @@ def rekam_medis_create(
     'Content-Type': 'application/json'
   }, json=body)
   return RedirectResponse(f'/rekam-medis/{pasien_id}', status_code=status.HTTP_302_FOUND)
+
+@router.get('/daftar-periksa', name='daftar-periksa')
+def daftar_periksa(request: Request, access: str = Cookie(None), user: UserRetrieve = Depends(crud_user.get_current_user_login), db: Session= Depends(get_db_session)):
+  antrian_list = crud_antrian.get_by_antrian_aktif_per_poli(db=db, poli=user.dokter[0].poli)
+  print(antrian_list)
+  context = {
+    'daftar_periksa_sidebar_link_active': 'active',
+    'nama': 'Periksa',
+    'request': request,
+    'user': user,
+    'antrian_list': antrian_list
+  }
+  return templates.TemplateResponse('pages/daftar-periksa.html', context)
 
 @router.get('/404-not-found', name='404-not-found')
 def redirect_404_not_found(request: Request):

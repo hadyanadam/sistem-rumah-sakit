@@ -13,8 +13,8 @@ class CRUDAntrian(CRUDBase[Antrian, AntrianCreate, AntrianUpdate]):
       antrian = db.query(self.model).filter(self.model.aktif).order_by(self.model.asc()).offset(skip).limit(limit).all()
       return antrian
 
-  def get_by_pasien_antrian_aktif(self, db: Session, *, pasien_id) -> Antrian:
-      antrian = db.query(self.model).filter(self.model.pasien_id == pasien_id and self.model.aktif).first()
+  def get_by_antrian_aktif_per_poli(self, db: Session, *, poli: str) -> List[Antrian]:
+      antrian = db.query(self.model).filter(self.model.aktif and self.model.poli == poli).order_by(self.model.no_antrian).all()
       return antrian
 
   def create(self, db: Session, *, obj_in: AntrianCreate) -> Antrian:

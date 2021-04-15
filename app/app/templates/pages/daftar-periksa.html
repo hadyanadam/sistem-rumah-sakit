@@ -1,0 +1,57 @@
+{% extends 'pages/admin/pasien.html' %}
+
+
+{% block input_form %}
+{% endblock input_form %}
+
+
+{% block table_list %}
+<div class="card-body p-0">
+  <table class="table" id="pasien-table">
+    <thead>
+      <tr>
+        <th style="width: 10px">#</th>
+        <th>Nama</th>
+        <th>Alamat</th>
+        <th>TTL</th>
+        <th>No Telp</th>
+        <th>BPJS</th>
+        <th class="noExport">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for antrian in antrian_list %}
+        <tr>
+          <td>{{antrian.no_antrian}}.</td>
+          <td>{{antrian.pasien.nama}}</td>
+          <td>{{antrian.pasien.alamat}}</td>
+          <td>{{antrian.pasien.tempat_lahir}}, {{antrian.pasien.tanggal_lahir}}</td>
+          <td>{{antrian.pasien.no_hp}}</td>
+          {% if antrian.pasien.bpjs %}
+            <td class="d-none">Pakai</td>
+            <td class="noExport"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
+          {% else %}
+            <td class="d-none">Tidak</td>
+            <td class="noExport"><i class="fa fa-times-circle" aria-hidden="true"></i></td>
+          {% endif %}
+          <td class="noExport">
+            {% if user.dokter %}
+              <a href="/rekam-medis/{{ antrian.pasien.id }}" class="badge bg-primary"><i class="fa fa-eye" aria-hidden="true"></i> Rekam Medis</a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock table_list %}
+
+
+{% block header_text %}
+  Antrian Periksa {{ user.dokter[0].poli }}
+{% endblock header_text %}
+
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">Daftar Periksa</li>
+{% endblock breadcrumb %}

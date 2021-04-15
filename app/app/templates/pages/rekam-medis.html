@@ -28,7 +28,43 @@
           <div class="col-12 col-lg-12">
             <div class="card card-primary">
               <div class="card-header">
-                <h3 class="card-title">Add Keluhan</h3>
+                <h3 class="card-title"><i class="fa fa-user-circle" aria-hidden="true"></i> Profil Pasien</h3>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-lg-6 col-12">
+                    <div class="h4"><strong>Nama:</strong></div>
+                    <div class="h5">{{ pasien.nama }}</div>
+                    <hr>
+                    <div class="h4"><strong>Alamat:</strong></div>
+                    <div class="h5">{{ pasien.alamat }}</div>
+                    <hr>
+                    <div class="h4"><strong>No Telp:</strong></div>
+                    <div class="h5">{{ pasien.no_hp }}</div>
+                    <hr>
+                  </div>
+                  <div class="col-lg-6 col-12">
+                    <div class="h4"><strong>Tempat Tanggal Lahir:</strong></div>
+                    <div class="h5">{{ pasien.tempat_lahir }}, {{ pasien.tanggal_lahir}}</div>
+                    <hr>
+                    <div class="h4"><strong>Pengguna BPJS:</strong></div>
+                    <div class="h5">
+                    {% if pasien.bpjs %}
+                    Ya
+                    {% else %}
+                    Tidak
+                    {% endif %}
+                      </div>
+                      <hr>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-12">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add Keluhan</h3>
               </div>
               <!-- /.card-header -->
               <!-- form start -->
@@ -37,7 +73,6 @@
                   <div class="row">
                     <div class="col-12 col-lg-12">
                       <div class="form-group">
-                        <label for="exampleInputPassword1">Keluhan</label>
                         <textarea type="text" class="form-control" row="4" name="keluhan" placeholder="Tambah keluhan"></textarea>
                       </div>
                     </div>
@@ -54,7 +89,10 @@
           <div class="col-lg-12 col-12">
             <div class="card">
               <div class="card-header">
-                <h2 class="card-title">Daftar Rekam Medis</h2>
+                <h2 class="card-title"><i class="fa fa-list" aria-hidden="true"></i> Daftar Rekam Medis</h2>
+                <div class="float-right">
+                  <button class="btn btn-success"><i class="fa fa-file-excel" aria-hidden="true"></i> Excel</button>
+                </div>
               </div>
               <!-- /.card-header -->
               <div class="card-body p-0">
@@ -84,15 +122,6 @@
                 </table>
               </div>
               <!-- /.card-body -->
-              <div class="card-tools mt-2 ml-4">
-                <ul class="pagination pagination-sm">
-                  <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
-                  <li class="page-item"><a class="page-link" href="#">1</a></li>
-                  <li class="page-item"><a class="page-link" href="#">2</a></li>
-                  <li class="page-item"><a class="page-link" href="#">3</a></li>
-                  <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
-                </ul>
-              </div>
             </div>
             <!-- /.card -->
         </div>
@@ -102,3 +131,15 @@
   </div>
   <!-- /.content-wrapper -->
 {% endblock content %}
+
+
+{% block addscript %}
+<script>
+  $("#button-export").click(() => {
+    $("#dokter-table").table2excel({
+      exclude: ".noExport",
+      filename: "excel_sheet-name.xls"
+    });
+  })
+</script>
+{% endblock addscript %}

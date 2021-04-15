@@ -35,6 +35,16 @@ async def retrieve_pasien(db: Session= Depends(get_db_session), current_user: Us
   else:
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
+@router.get('/{id}', response_model=PasienRetrieve)
+async def retrieve_pasien(id:int, db: Session= Depends(get_db_session), current_user: User = Depends(crud_user.get_current_user)):
+  if current_user.is_admin or current_user.dokter:
+    pasien = crud_pasien.get(db=db, id=id)
+    if not pasien:
+      raise HTTPException(status_code=status.HTTP_200_OK, detail="no data")
+    return pasien
+  else:
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
 @router.patch('/{id}', response_model=PasienRetrieve)
 async def update_pasien(
   id: int,

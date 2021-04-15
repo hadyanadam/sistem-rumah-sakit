@@ -1,13 +1,17 @@
 {% extends 'pages/admin/user.html' %}
 
 
+{% block id_table %}
+'pasien-table','pasien'
+{% endblock id_table %}
+
 {% block input_form %}
 {% if user.is_admin %}
 
 <div class="col-12 col-lg-12">
   <div class="card card-primary">
     <div class="card-header">
-      <h3 class="card-title">Add {{ nama }}</h3>
+      <h3 class="card-title"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add {{ nama }}</h3>
     </div>
     <!-- /.card-header -->
     <!-- form start -->
@@ -75,16 +79,16 @@
 
 {% block table_list %}
 <div class="card-body p-0">
-  <table class="table">
+  <table class="table" id="pasien-table">
     <thead>
       <tr>
         <th style="width: 10px">#</th>
         <th>Nama</th>
         <th>Alamat</th>
-        <th>No Telp</th>
         <th>TTL</th>
+        <th>No Telp</th>
         <th>BPJS</th>
-        <th>Action</th>
+        <th class="noExport">Action</th>
       </tr>
     </thead>
     <tbody>
@@ -101,11 +105,13 @@
           <td>{{pasien.tempat_lahir}}, {{pasien.tanggal_lahir}}</td>
           <td>{{pasien.no_hp}}</td>
           {% if pasien.bpjs %}
-            <td><i class="fa fa-check-circle" aria-hidden="true"></i></td>
+            <td class="d-none">Pakai</td>
+            <td class="noExport"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
           {% else %}
-            <td><i class="fa fa-times-circle" aria-hidden="true"></i></td>
+            <td class="d-none">Tidak</td>
+            <td class="noExport"><i class="fa fa-times-circle" aria-hidden="true"></i></td>
           {% endif %}
-          <td>
+          <td class="noExport">
             {% if user.dokter %}
               <a href="/rekam-medis/{{ pasien.id }}" class="badge bg-primary">lihat</a>
             {% endif %}
@@ -119,5 +125,27 @@
 </div>
 {% endblock %}
 
+{% block addscript %}
+<script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
-  
+<script src="{{ url_for('static', path='plugins/moment/moment.min.js') }}"></script>
+<script src="{{ url_for('static', path='plugins/inputmask/min/jquery.inputmask.bundle.min.js') }}"></script>
+<script>
+  $(function () {
+    //Datemask dd/mm/yyyy
+    $('#datemask').inputmask('yyyy-mm-dd', { 'placeholder': 'yyyy-mm-dd' })
+    //Datemask2 mm/dd/yyyy
+    $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' })
+    //Money Euro
+    $('[data-mask]').inputmask()
+
+  })
+  $("#button-export").click(() => {
+    $("#pasien-table").table2excel({
+      exclude: ".noExport",
+      filename: "excel_sheet-name.xls"
+    });
+  })
+</script>
+
+{% endblock addscript %}

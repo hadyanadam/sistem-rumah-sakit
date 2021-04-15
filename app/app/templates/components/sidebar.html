@@ -27,42 +27,52 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-          {% if user.is_admin %}
+          <li class="nav-item">
+            <a href="{{ url_for('antrian') }}" class="nav-link {{ antrian_sidebar_link_active }}">
+              <i class="fa fa-calendar nav-icon" aria-hidden="true"></i>
+              <p>
+                Antrian
+              </p>
+            </a>
+          </li>
+          {% if not user.is_admin %}
             <li class="nav-item">
-              <a href="{{ url_for('antrian') }}" class="nav-link {{ antrian_sidebar_link_active }}">
-                <i class="fa fa-calendar nav-icon" aria-hidden="true"></i>
+              <a href="{{ url_for('daftar-periksa') }}" class="nav-link {{ daftar_periksa_sidebar_link_active }}">
+                <i class="fa fa-list-ul nav-icon" aria-hidden="true"></i>
                 <p>
-                  Antrian
+                  Daftar Periksa
                 </p>
               </a>
             </li>
           {% endif %}
 
-          <li class="nav-item has-treeview {{ user_menu_open }}">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fa fa-users" aria-hidden="true"></i>
-              <p>
-                User Management
-                <i class="fas fa-angle-left right"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              {% if user.is_admin %}
+          {% if user.is_admin %}
+            <li class="nav-item has-treeview {{ user_menu_open }}">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fa fa-users" aria-hidden="true"></i>
+                <p>
+                  User Management
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                {% if user.is_admin %}
+                  <li class="nav-item">
+                    <a href="{{ url_for('dokter') }}" class="nav-link {{ dokter_sidebar_link_active }}">
+                      <i class="fa fa-medkit nav-icon" aria-hidden="true"></i>
+                      <p>Dokter</p>
+                    </a>
+                  </li>
+                {% endif %}
                 <li class="nav-item">
-                  <a href="{{ url_for('dokter') }}" class="nav-link {{ dokter_sidebar_link_active }}">
-                    <i class="fa fa-medkit nav-icon" aria-hidden="true"></i>
-                    <p>Dokter</p>
+                    <a href="{{ url_for('pasien') }}" class="nav-link {{ pasien_sidebar_link_active }}">
+                    <i class="fa fa-plus-square nav-icon" aria-hidden="true"></i>
+                    <p>Pasien</p>
                   </a>
                 </li>
-              {% endif %}
-              <li class="nav-item">
-                  <a href="{{ url_for('pasien') }}" class="nav-link {{ pasien_sidebar_link_active }}">
-                  <i class="fa fa-plus-square nav-icon" aria-hidden="true"></i>
-                  <p>Pasien</p>
-                </a>
-              </li>
-            </ul>
-          </li>
+              </ul>
+            </li>
+          {% endif %}
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
