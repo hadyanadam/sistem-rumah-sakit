@@ -30,7 +30,8 @@ async def create_antrian(rfid: str, input_data: AntrianCreate, db: Session= Depe
     new_antrian = crud_antrian.create(obj_in=input_data, db=db)
     return new_antrian
   else:
-    rfid_temporary = db.query(RFIDTemporary).filter(RFIDTemporary == 1).first()
+    rfid_temporary = db.query(RFIDTemporary).filter(RFIDTemporary.id == 1).first()
+    print(rfid_temporary)
     rfid_temporary.aktif = True
     rfid_temporary.rfid = rfid
     db.add(rfid_temporary)
