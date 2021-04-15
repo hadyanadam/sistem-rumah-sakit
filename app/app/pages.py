@@ -190,10 +190,15 @@ def pasien_create(
     'rfid': rfid,
     'bpjs': bpjs
   }
-  requests.post('http://localhost:8000/api/v1/pasien', headers={
+  response = requests.post('http://localhost:8000/api/v1/pasien', headers={
     'Authorization': f'Bearer {access_token}',
     'Content-Type': 'application/json'
   }, json=body)
+  if response.status_code == 201:
+    rfid_obj = db.query(RFIDTemporary).filter(RFIDTemporary.id == 1).first()
+    rfid_obj.aktif = False
+    db.add(rfid_obj)
+    db.commit()
   return RedirectResponse('/admin/pasien', status_code=status.HTTP_302_FOUND)
 
 @router.get('/rekam-medis/{pasien_id}', response_class=HTMLResponse, name='rekam-medis')
