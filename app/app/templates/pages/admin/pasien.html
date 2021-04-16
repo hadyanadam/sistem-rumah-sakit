@@ -49,7 +49,7 @@
         </div>
         <div class="form-group">
           <label for="exampleInputEmail1">RFID</label>
-          <input type="number" class="form-control" name="rfid" {% if rfid.aktif %}
+          <input type="text" class="form-control" name="rfid" {% if rfid.aktif %}
           value="{{ rfid.rfid }}"
           {% else %}
           placeholder="Silahkan Tap Kartu"
