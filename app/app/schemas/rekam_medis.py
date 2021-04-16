@@ -24,7 +24,7 @@ class RekamMedisRetrieve(RekamMedis):
   class Config:
     orm_mode=True
     json_encoders = {
-      datetime: lambda v: v.strftime("%d %B, %Y"),
+      datetime: lambda v: v.strftime("%d %B %Y"),
     }
 
   @classmethod

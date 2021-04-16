@@ -100,7 +100,8 @@
                   <thead>
                     <tr>
                       <th style="width: 10px">#</th>
-                      <th>Keluhan</th>
+                      <th rowspan='3'>Keluhan</th>
+                      <th style="width: 20%;">Tanggal Periksa</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -112,9 +113,10 @@
                     </tr>
                     {% else %}
                       {% for rm in rekam_medis %}
-                      <tr colspan="3">
+                      <tr>
                         <td>{{ loop.index }}</td>
-                        <td>{{ rm.keluhan }}</td>
+                        <td rowspan='3'>{{ rm.keluhan }}</td>
+                        <td>{{ rm.created_at }}</td>
                       </tr>
                       {% endfor %}
                     {% endif %}

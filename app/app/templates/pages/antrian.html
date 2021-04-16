@@ -35,9 +35,10 @@
               </div>
               <div class="row justify-content-center">
                 {% if antrian.antrian[0] %}
-                <h1 class="nomor-antrian">{{ antrian.antrian[0].no_antrian }}</h1>
+                  <h1 class="nomor-antrian col-12 text-center">{{ antrian.antrian[0].no_antrian }}</h1>
+                  <h1>{{ antrian.antrian[0].pasien.nama }}</h1>
                 {% else %}
-                <h1 class="nomor-antrian">Kosong</h1>
+                <h1 class="display-1">Kosong</h1>
                 {% endif %}
               </div>
             </div>
@@ -54,8 +55,9 @@
                       {% for queue in antrian.antrian %}
                       {% if loop.index != 1 %}
                       <tr>
-                        <td>
-                          <h1 class="text-center">{{ queue.no_antrian }}</h1>
+                        <td class='d-flex justify-content-between'>
+                          <h1 class="text-left">{{ queue.no_antrian }}.</h1>
+                          <h1 class="text-right">{{ queue.pasien.nama  }}</h1>
                         </td>
                       </tr>
                       {% endif %}
@@ -86,7 +88,12 @@
                 <h1>{{ antrian.nama_poli }}</h1>
               </div>
               <div class="row justify-content-center">
-                <h1 class="nomor-antrian">{{ antrian.antrian[0].no_antrian }}</h1>
+                {% if antrian.antrian[0] %}
+                  <h1 class="nomor-antrian col-12 text-center">{{ antrian.antrian[0].no_antrian }}</h1>
+                  <h1>{{ antrian.antrian[0].pasien.nama }}</h1>
+                {% else %}
+                <h1 class="display-1">Kosong</h1>
+                {% endif %}
               </div>
             </div>
             <div class="card bg-{{ antrian.color }}">
@@ -101,8 +108,9 @@
                     {% for queue in antrian.antrian %}
                       {% if loop.index != 1 %}
                         <tr>
-                          <td>
-                            <h1 class="text-center">{{ queue.no_antrian }}</h1>
+                          <td class='d-flex justify-content-between'>
+                            <h1 class="text-left">{{ queue.no_antrian }}.</h1>
+                            <h1 class="text-right">{{ queue.pasien.nama  }}</h1>
                           </td>
                         </tr>
                       {% endif %}

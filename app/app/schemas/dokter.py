@@ -1,5 +1,5 @@
 from pydantic import BaseModel, validator
-from typing import Optional
+from typing import Optional, Dict, Any
 from datetime import datetime, date
 from fastapi import Query
 
@@ -47,6 +47,7 @@ class DokterUpdate(Dokter):
   poli: Optional[str]
 
 class DokterRetrieve(Dokter):
+  user: Any
   created_at: datetime
   updated_at: datetime
 

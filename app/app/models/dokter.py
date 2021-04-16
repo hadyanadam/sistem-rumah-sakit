@@ -15,8 +15,6 @@ class Dokter(Base):
   no_hp = sa.Column(sa.String(20), nullable=True)
   poli = sa.Column(sa.String(40), nullable=False)
 
-  user = relationship('User', backref='dokter')
-
   created_at = sa.Column(sa.DateTime(timezone=True), nullable=False, default=datetime.datetime.now)
   updated_at = sa.Column(sa.DateTime(timezone=True), nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now)
 

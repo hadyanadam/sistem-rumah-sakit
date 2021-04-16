@@ -12,6 +12,8 @@ class User(Base):
   is_active = sa.Column(sa.Boolean, default=True)
   is_admin = sa.Column(sa.Boolean, default=False)
 
+  dokter = relationship('Dokter', backref='user')
+
   created_at = sa.Column(sa.DateTime(timezone=True), nullable=False, default=datetime.datetime.now)
   updated_at = sa.Column(sa.DateTime(timezone=True), nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now)
 
