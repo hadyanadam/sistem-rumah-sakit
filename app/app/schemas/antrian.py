@@ -10,14 +10,13 @@ class Antrian(BaseModel):
   poli: str
   aktif: bool
 
-class AntrianCreate(Antrian):
-  id: Optional[int]
+class AntrianCreate(BaseModel):
   pasien_id: Optional[int]
+  no_antrian: Optional[int]
   poli: str = Query(..., max_length=60)
   aktif: bool = True
 
 class AntrianUpdate(AntrianCreate):
-  pasien_id: Optional[int]
   poli: Optional[str]
   aktif: Optional[bool]
 

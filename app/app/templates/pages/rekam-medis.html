@@ -68,7 +68,7 @@
               </div>
               <!-- /.card-header -->
               <!-- form start -->
-              <form role="form" action='/rekam-medis/{{ pasien_id }}' method='post'>
+              <form role="form" action='/rekam-medis/{{ pasien_id }}?antrian_id={{ pasien.antrian_aktif[0].id }}' method='post'>
                 <div class="card-body">
                   <div class="row">
                     <div class="col-12 col-lg-12">

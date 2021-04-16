@@ -8,11 +8,12 @@ from ..core.config import settings
 from ..dependencies import get_db_session
 
 from ..schemas.antrian import AntrianCreate, AntrianRetrieve, AntrianUpdate
+from ..schemas.pasien import PasienAntrian
+from ..schemas.rfid_temporary import RFIDTemporary as RFIDSchemas
 from ..models.user import User
 from ..crud.crud_antrian import crud_antrian
 from ..crud.crud_pasien import crud_pasien
 from ..crud.crud_user import crud_user
-from ..schemas.rfid_temporary import RFIDTemporary as RFIDSchemas
 from ..models.rfid_temporary import RFIDTemporary
 
 
@@ -21,13 +22,14 @@ router = APIRouter(prefix=f'{settings.API_V1_STR}/antrian')
 @router.post(
   '/{rfid}',
   status_code=status.HTTP_201_CREATED,
-  response_model=Union[AntrianRetrieve, RFIDSchemas],
+  response_model=Union[PasienAntrian, RFIDSchemas],
 )
 async def create_antrian(rfid: str, input_data: AntrianCreate, db: Session= Depends(get_db_session)):
   pasien = crud_pasien.get_by_rfid(db=db, rfid=rfid)
   if pasien:
     input_data.pasien_id = pasien.id
     new_antrian = crud_antrian.create(obj_in=input_data, db=db)
+    pasien.no_antrian = new_antrian.no_antrian
     return pasien
   else:
     rfid_temporary = db.query(RFIDTemporary).filter(RFIDTemporary.id == 1).first()

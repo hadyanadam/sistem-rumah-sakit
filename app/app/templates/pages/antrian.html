@@ -34,7 +34,11 @@
                 <h1>{{ antrian.nama_poli }}</h1>
               </div>
               <div class="row justify-content-center">
-                <h1 class="nomor-antrian">0</h1>
+                {% if antrian.antrian[0] %}
+                <h1 class="nomor-antrian">{{ antrian.antrian[0].no_antrian }}</h1>
+                {% else %}
+                <h1 class="nomor-antrian">Kosong</h1>
+                {% endif %}
               </div>
             </div>
               <div class="card bg-{{ antrian.color }}">
@@ -46,15 +50,23 @@
                 <div class="card-body p-0">
                   <table class="table table-sm">
                     <tbody>
-                      {% for queue in antrian_list %}
-                        {% if queue.poli == antrian.nama_poli %}
-                          <tr>
-                            <td>
-                              <h1 class="text-center">{{ queue.no_antrian }}</h1>
-                            </td>
-                          </tr>
-                        {% endif %}
+                      {% if antrian.antrian|length != 1 and antrian.antrian|length != 0 %}
+                      {% for queue in antrian.antrian %}
+                      {% if loop.index != 1 %}
+                      <tr>
+                        <td>
+                          <h1 class="text-center">{{ queue.no_antrian }}</h1>
+                        </td>
+                      </tr>
+                      {% endif %}
                       {% endfor %}
+                      {% else %}
+                      <tr>
+                        <td>
+                          <h1 class="text-center">Tidak Ada</h1>
+                        </td>
+                      </tr>
+                      {% endif %}
                     </tbody>
                   </table>
                 </div>
@@ -74,7 +86,7 @@
                 <h1>{{ antrian.nama_poli }}</h1>
               </div>
               <div class="row justify-content-center">
-                <h1 class="nomor-antrian">0</h1>
+                <h1 class="nomor-antrian">{{ antrian.antrian[0].no_antrian }}</h1>
               </div>
             </div>
             <div class="card bg-{{ antrian.color }}">
@@ -86,8 +98,8 @@
               <div class="card-body p-0">
                 <table class="table table-sm">
                   <tbody>
-                    {% for queue in antrian_list %}
-                      {% if queue.poli == antrian.nama_poli %}
+                    {% for queue in antrian.antrian %}
+                      {% if loop.index != 1 %}
                         <tr>
                           <td>
                             <h1 class="text-center">{{ queue.no_antrian }}</h1>

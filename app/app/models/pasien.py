@@ -21,3 +21,7 @@ class Pasien(Base):
 
   def __repr__(self):
     return f'<Pasien {self.id}>'
+
+  @property
+  def antrian_aktif(self):
+    return [antrian for antrian in self.antrian if antrian.aktif]

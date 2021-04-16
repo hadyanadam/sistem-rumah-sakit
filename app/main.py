@@ -32,8 +32,8 @@ def init_data():
     init_db(db)
     # seed_dokter(iter=10, db=db)
     # seed_pasien(iter=10, db=db)
-    # seed_antrian(iter=10, db=db, range_pasien_id=[1, 10])
-    # seed_rekam_medis(iter=50, db=db, range_pasien_id=[1,10], range_dokter_id=[2,11])
+    # seed_antrian(iter=5, db=db, range_pasien_id=[1, 10])
+    # seed_rekam_medis(iter=50, db=db, range_pasien_id=[2,11], range_dokter_id=[1,10])
 
 app.add_middleware(
     CORSMiddleware,
@@ -43,9 +43,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(AdminRouter)
-app.include_router(DokterRouter)
-app.include_router(PasienRouter)
-app.include_router(RekamMedisRouter)
-app.include_router(AntrianRouter)
+app.include_router(AdminRouter, tags=['User'])
+app.include_router(DokterRouter, tags=['Dokter'])
+app.include_router(PasienRouter, tags=['Pasien'])
+app.include_router(RekamMedisRouter, tags=['RekamMedis'])
+app.include_router(AntrianRouter, tags=['Antrian'])
 app.include_router(PagesRouter, include_in_schema=False,default_response_class=HTMLResponse)

@@ -44,3 +44,11 @@ class PasienRetrieve(Pasien):
 
   class Config:
     orm_mode=True
+
+class PasienAntrian(Pasien):
+  no_antrian: int
+  created_at: datetime
+  updated_at: datetime
+
+  class Config:
+    orm_mode=True

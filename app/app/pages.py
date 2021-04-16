@@ -1,6 +1,6 @@
 import requests
 import json
-from fastapi import APIRouter, Request, status, Depends, HTTPException, Response, Cookie, Form
+from fastapi import APIRouter, Request, status, Depends, HTTPException, Response, Cookie, Form, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from starlette.routing import Route, Mount
@@ -61,7 +61,7 @@ async def logout():
   return response
 
 @router.get('/antrian', response_class=HTMLResponse, name='antrian',)
-def dashboard(request: Request, user: UserRetrieve = Depends(crud_user.get_current_user_login), access_token: str = Cookie(None)):
+def dashboard(request: Request, user: UserRetrieve = Depends(crud_user.get_current_user_login), access_token: str = Cookie(None), db: Session= Depends(get_db_session)):
   antrian_atas = [
     {
       "nama_poli": "Poli Umum",
@@ -86,13 +86,17 @@ def dashboard(request: Request, user: UserRetrieve = Depends(crud_user.get_curre
       "color": "purple"
     },
   ]
-  antrian = requests.get('http://localhost:8000/api/v1/antrian',
-    headers={
-      "Authorization": f"Bearer {access_token}"
-    },
-    # params={"nama_poli": "Poli Kandungan"}
-  )
-  antrian = antrian.json()
+  antrian_umum = crud_antrian.get_by_antrian_aktif_per_poli(db=db, poli="Poli Umum")
+  antrian_gigi = crud_antrian.get_by_antrian_aktif_per_poli(db=db, poli="Poli Gigi")
+  antrian_kandungan = crud_antrian.get_by_antrian_aktif_per_poli(db=db, poli="Poli Kandungan")
+  antrian_anak = crud_antrian.get_by_antrian_aktif_per_poli(db=db, poli="Poli Anak")
+  antrian_penyakit_dalam = crud_antrian.get_by_antrian_aktif_per_poli(db=db, poli="Poli Penyakit Dalam")
+  antrian_atas[0].update({'antrian': antrian_umum})
+  antrian_atas[1].update({'antrian': antrian_gigi})
+  antrian_atas[2].update({'antrian': antrian_kandungan})
+  antrian_bawah[0].update({'antrian': antrian_anak})
+  antrian_bawah[1].update({'antrian': antrian_penyakit_dalam})
+  print(antrian_atas)
   return templates.TemplateResponse(
     'pages/antrian.html', {
       "request": request,
@@ -100,17 +104,16 @@ def dashboard(request: Request, user: UserRetrieve = Depends(crud_user.get_curre
       "antrian_bawah":antrian_bawah,
       "antrian_sidebar_link_active": 'active',
       "user": user,
-      "antrian_list": antrian,
     })
 
 @router.get('/admin/dokter', response_class=HTMLResponse, name='dokter')
-def dokter(request: Request, access_token: str = Cookie(None),  user: UserRetrieve = Depends(crud_user.get_current_user_login)):
+def dokter(request: Request, access_token: str = Cookie(None), success:str = Cookie(None),  user: UserRetrieve = Depends(crud_user.get_current_user_login)):
   print('dokter', access_token)
   response = requests.get(url="http://localhost:8000/api/v1/dokter", headers={
     "Authorization": f"Bearer {access_token}"
   })
   dokter = response.json()
-  return templates.TemplateResponse(
+  response = templates.TemplateResponse(
     'pages/admin/user.html', {
       "request":request,
       "nama": "Dokter",
@@ -118,7 +121,10 @@ def dokter(request: Request, access_token: str = Cookie(None),  user: UserRetrie
       "user_menu_open": "menu-open",
       "dokter_list": dokter,
       "user": user,
+      "success": success
     })
+  response.delete_cookie('success')
+  return response
 
 @router.post('/admin/dokter', name='pasien-create', dependencies=[Depends(crud_user.get_current_user_login)])
 def dokter_create(
@@ -147,16 +153,18 @@ def dokter_create(
     'Authorization': f'Bearer {access_token}',
     'Content-Type': 'application/json'
   }, json=body)
-  return RedirectResponse('/admin/dokter', status_code=status.HTTP_302_FOUND)
+  response = RedirectResponse('/admin/dokter', status_code=status.HTTP_302_FOUND)
+  response.set_cookie(key='success', value='Dokter berhasil dibuat')
+  return response
 
 @router.get('/admin/pasien', response_class=HTMLResponse, name='pasien')
-def pasien(request: Request, access_token: str = Cookie(None),  user: UserRetrieve = Depends(crud_user.get_current_user_login), db: Session = Depends(get_db_session)):
+def pasien(request: Request, access_token: str = Cookie(None), success: str = Cookie(None), user: UserRetrieve = Depends(crud_user.get_current_user_login), db: Session = Depends(get_db_session)):
   response = requests.get(url="http://localhost:8000/api/v1/pasien", headers={
     "Authorization": f"Bearer {access_token}"
   })
   pasien = response.json()
   rfid = db.query(RFIDTemporary).filter_by(id=1).first()
-  return templates.TemplateResponse(
+  response = templates.TemplateResponse(
     'pages/admin/pasien.html', {
       "request":request,
       "nama": "Pasien",
@@ -165,7 +173,10 @@ def pasien(request: Request, access_token: str = Cookie(None),  user: UserRetrie
       "pasien_list": pasien,
       "user": user,
       "rfid": rfid,
+      "success": success,
     })
+  response.delete_cookie('success')
+  return response
 
 @router.post('/admin/pasien', name="pasien-create")
 def pasien_create(
@@ -179,8 +190,6 @@ def pasien_create(
   db: Session = Depends(get_db_session),
   access_token: str = Cookie(None)
 ):
-  print(bpjs)
-  print(tanggal_lahir)
   body= {
     'nama': nama,
     'alamat': alamat,
@@ -199,7 +208,9 @@ def pasien_create(
     rfid_obj.aktif = False
     db.add(rfid_obj)
     db.commit()
-  return RedirectResponse('/admin/pasien', status_code=status.HTTP_302_FOUND)
+  response = RedirectResponse('/admin/pasien', status_code=status.HTTP_302_FOUND)
+  response.set_cookie(key='success', value='Pasien berhasil dibuat')
+  return response
 
 @router.get('/rekam-medis/{pasien_id}', response_class=HTMLResponse, name='rekam-medis')
 def rekam_medis(request: Request, pasien_id: int, db: Session = Depends(get_db_session), access_token: str = Cookie(None), user: UserRetrieve = Depends(crud_user.get_current_user_login)):
@@ -225,10 +236,12 @@ def rekam_medis(request: Request, pasien_id: int, db: Session = Depends(get_db_s
 def rekam_medis_create(
   pasien_id: int,
   keluhan: str = Form(...),
+  antrian_id: str = Query(...),
   user: UserRetrieve = Depends(crud_user.get_current_user_login),
+  db: Session = Depends(get_db_session),
   access_token: str = Cookie(None),
 ):
-  print(user.dokter)
+  crud_antrian.remove(id=antrian_id, db=db)
   body= {
     'pasien_id': pasien_id,
     'dokter_id': user.dokter[0].id,
@@ -238,20 +251,25 @@ def rekam_medis_create(
     'Authorization': f'Bearer {access_token}',
     'Content-Type': 'application/json'
   }, json=body)
-  return RedirectResponse(f'/rekam-medis/{pasien_id}', status_code=status.HTTP_302_FOUND)
+  response = RedirectResponse(f'/daftar-periksa', status_code=status.HTTP_302_FOUND)
+  response.set_cookie(key='success',value="Data sudah terekam")
+  return response
 
 @router.get('/daftar-periksa', name='daftar-periksa')
-def daftar_periksa(request: Request, access: str = Cookie(None), user: UserRetrieve = Depends(crud_user.get_current_user_login), db: Session= Depends(get_db_session)):
+def daftar_periksa(
+  request: Request, success: str = Cookie(None), user: UserRetrieve = Depends(crud_user.get_current_user_login), db: Session= Depends(get_db_session)):
   antrian_list = crud_antrian.get_by_antrian_aktif_per_poli(db=db, poli=user.dokter[0].poli)
-  print(antrian_list)
   context = {
     'daftar_periksa_sidebar_link_active': 'active',
     'nama': 'Periksa',
     'request': request,
     'user': user,
-    'antrian_list': antrian_list
+    'antrian_list': antrian_list,
+    'success': success
   }
-  return templates.TemplateResponse('pages/daftar-periksa.html', context)
+  response = templates.TemplateResponse('pages/daftar-periksa.html', context)
+  response.delete_cookie('success')
+  return response
 
 @router.get('/404-not-found', name='404-not-found')
 def redirect_404_not_found(request: Request):

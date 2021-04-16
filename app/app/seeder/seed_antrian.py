@@ -18,13 +18,13 @@ def seed_antrian(
   db: Session,
   range_pasien_id: List[int],
 ):
-  for i in range(iter):
-    antrian = AntrianCreate(
-      no_antrian=i+1,
-      pasien_id=faker.random_int(min=range_pasien_id[0], max=range_pasien_id[1]),
-      poli=random.choice(poli),
-    )
-    crud_antrian.create(
-      db=db,
-      obj_in=antrian
-    )
+  for p in poli:
+    for i in range(iter):
+      antrian = AntrianCreate(
+        pasien_id=faker.random_int(min=range_pasien_id[0], max=range_pasien_id[1]),
+        poli=p,
+      )
+      crud_antrian.create(
+        db=db,
+        obj_in=antrian
+      )
