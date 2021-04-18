@@ -1,7 +1,7 @@
 from pydantic import BaseModel, validator
 from typing import Optional, Dict, Any
 from datetime import datetime, date
-from fastapi import Query
+from fastapi import Query, Form
 
 class Dokter(BaseModel):
   id: int
@@ -26,7 +26,7 @@ class DokterCreate(Dokter):
 
   class Config:
     json_encoders = {
-      date: lambda v: v.strftime("%d %B, %Y"),
+      date: lambda v: f'{v.day}-{v.month}-{v.year}',
     }
 
   @classmethod
@@ -35,9 +35,9 @@ class DokterCreate(Dokter):
     return date.fromisoformat(v)
 
 
-class DokterUpdate(Dokter):
-  username: Optional[str] = Query(..., max_length=20)
-  password: Optional[str] = Query(..., max_length=20, min_length=8)
+class DokterUpdate(DokterCreate):
+  username: Optional[str]
+  password: Optional[str]
   user_id: Optional[int]
   nama: Optional[str] = Query(..., max_length=60)
   alamat: Optional[str] = Query(..., max_length=130)
@@ -53,3 +53,13 @@ class DokterRetrieve(Dokter):
 
   class Config:
     orm_mode=True
+
+class DokterFormUpdate(BaseModel):
+  nama: Optional[str] = Form(...),
+  email: Optional[str] = Form(...),
+  alamat: Optional[str] = Form(...),
+  no_hp: Optional[str] =Form(...),
+  tempat_lahir: Optional[str] = Form(...),
+  tanggal_lahir: Optional[str] = Form(...),
+  poli: Optional[str] = Form(...),
+  aktif: Optional[bool] = Form(...),

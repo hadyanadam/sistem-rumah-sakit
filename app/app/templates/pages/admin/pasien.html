@@ -99,7 +99,7 @@
       {% else %}
       {% for pasien in pasien_list %}
         <tr>
-          <td>{{pasien.id}}.</td>
+          <td>{{loop.index}}.</td>
           <td>{{pasien.nama}}</td>
           <td>{{pasien.alamat}}</td>
           <td>{{pasien.tempat_lahir}}, {{pasien.tanggal_lahir}}</td>
@@ -113,9 +113,16 @@
           {% endif %}
           <td class="noExport">
             {% if user.dokter %}
-              <a href="/rekam-medis/{{ pasien.id }}" class="badge bg-primary">lihat</a>
+              <a href="/rekam-medis/{{ pasien.id }}" class="badge bg-primary"><i class="fa fa-eye" aria-hidden="true"></i> lihat</a>
             {% endif %}
-            <a href="" class="badge bg-danger">delete</a>
+            <a href="/admin/dokter/edit/{{ pasien_id }}" class="badge bg-secondary">
+              <i class="fa fa-paint-brush" aria-hidden="true"></i>
+               edit
+            </a>
+            <a href="/admin/pasien/delete/{{ pasien.id }}" class="badge bg-danger">
+              <i class="fa fa-trash" aria-hidden="true"></i>
+               delete
+            </a>
           </td>
         </tr>
       {% endfor %}

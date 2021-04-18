@@ -29,7 +29,7 @@ class CRUDDokter(CRUDBase[Dokter, DokterCreate, DokterUpdate]):
       self, db: Session, *, db_obj: Dokter, obj_in: Union[DokterUpdate, Dict[str, Any]]
   ) -> Dokter:
       if isinstance(obj_in, dict):
-          update_data = obj_in
+        update_data = obj_in
       return super().update(db, db_obj=db_obj, obj_in=update_data)
 
 crud_dokter = CRUDDokter(Dokter)

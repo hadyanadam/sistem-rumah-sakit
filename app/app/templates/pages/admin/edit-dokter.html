@@ -45,57 +45,82 @@
               </div>
               <!-- /.card-header -->
               <!-- form start -->
-              <form role="form" action='/admin/dokter' method='post'>
+              <form role="form" action='/admin/dokter/edit/{{ dokter.id }}' method='post'>
                 <div class="card-body">
                   <div class="col-12 col-lg-12">
                     <div class="form-group">
                       <label for="exampleInputEmail1">Email</label>
-                      <input type="email" class="form-control" name="username" placeholder="Masukan email">
-                    </div>
-                    <div class="form-group">
-                      <label for="exampleInputPassword1">Password</label>
-                      <input type="password" class="form-control" name="password" placeholder="Password">
+                      <input type="email" class="form-control" name="username" placeholder="Masukan email" value="{{ dokter.user.username }}">
                     </div>
                   </div>
                   <div class="row">
                     <div class="col-6 col-lg-6">
                       <div class="form-group">
                         <label for="exampleInputEmail1">Nama {{ nama }}</label>
-                        <input type="text" class="form-control" name="nama" placeholder="Masukan Nama"">
+                        <input type="text" class="form-control" name="nama" placeholder="Masukan Nama" value="{{ dokter.nama }}">
                       </div>
                       <div class="form-group">
                         <label for="exampleInputPassword1">Alamat</label>
-                        <textarea type="text" class="form-control" row="3" name="alamat" placeholder="Masukan Alamat"></textarea>
+                        <textarea type="text" class="form-control" row="3" name="alamat" placeholder="Masukan Alamat">{{ dokter.alamat }}</textarea>
                       </div>
                       <div class="form-group">
                         <label for="exampleInputEmail1">No telp</label>
-                        <input type="number" class="form-control" name="no_hp" placeholder="Masukan No Telp"">
+                        <input type="text" class="form-control" name="no_hp" placeholder="Masukan No Telp" value="{{ dokter.no_hp }}">
                       </div>
                     </div>
                       <div class="col-6 col-lg-6">
                       <label for="exampleInputEmail1">Tempat Tanggal Lahir</label>
                         <div class="row">
                           <div class="form-group col-6 col-lg-6">
-                            <input type="text" class="form-control" name="tempat_lahir" placeholder="Masukan Tempat Lahir">
+                            <input type="text" class="form-control" name="tempat_lahir" placeholder="Masukan Tempat Lahir" value="{{ dokter.tempat_lahir }}">
                           </div>
                           <div class="form-group col-6 col-lg-6">
                             <div class="input-group">
                               <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                               </div>
-                              <input type="text" class="form-control" data-inputmask-alias="datetime" name='tanggal_lahir' data-inputmask-inputformat="yyyy-mm-dd" data-mask>
+                              <input type="text" class="form-control" data-inputmask-alias="datetime" name='tanggal_lahir' data-inputmask-inputformat="yyyy-mm-dd" data-mask value="{{ dokter.tanggal_lahir }}">
                             </div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label>Poli</label>
                           <select class="form-control" name="poli">
-                            <option value="">-</option>
-                            <option value="Poli Umum">Poli Umum</option>
-                            <option value="Poli Gigi">Poli Gigi</option>
-                            <option value="Poli Penyakit Dalam">Poli Penyakit Dalam</option>
-                            <option value="Poli Anak">Poli Anak</option>
-                            <option value="Poli Kandungan">Poli Kandungan</option>
+                            {% if dokter.poli == "Poli Umum" %}
+                              <option value="Poli Umum" selected>Poli Umum</option>
+                              <option value="Poli Gigi">Poli Gigi</option>
+                              <option value="Poli Penyakit Dalam">Poli Penyakit Dalam</option>
+                              <option value="Poli Anak">Poli Anak</option>
+                              <option value="Poli Kandungan">Poli Kandungan</option>
+                            {% endif %}
+                            {% if dokter.poli == "Poli Gigi" %}
+                              <option value="Poli Umum">Poli Umum</option>
+                              <option value="Poli Gigi" selected>Poli Gigi</option>
+                              <option value="Poli Penyakit Dalam">Poli Penyakit Dalam</option>
+                              <option value="Poli Anak">Poli Anak</option>
+                              <option value="Poli Kandungan">Poli Kandungan</option>
+                            {% endif %}
+                            {% if dokter.poli == "Poli Penyakit Dalam" %}
+                              <option value="Poli Umum">Poli Umum</option>
+                              <option value="Poli Gigi">Poli Gigi</option>
+                              <option value="Poli Penyakit Dalam" selected>Poli Penyakit Dalam</option>
+                              <option value="Poli Anak">Poli Anak</option>
+                              <option value="Poli Kandungan">Poli Kandungan</option>
+                            {% endif %}
+                            {% if dokter.poli == "Poli Anak" %}
+                              <option value="Poli Umum">Poli Umum</option>
+                              <option value="Poli Gigi">Poli Gigi</option>
+                              <option value="Poli Penyakit Dalam">Poli Penyakit Dalam</option>
+                              <option value="Poli Anak" selected>Poli Anak</option>
+                              <option value="Poli Kandungan">Poli Kandungan</option>
+                            {% endif %}
+                            {% if dokter.poli == "Poli Kandungan" %}
+                              <option value="Poli Umum">Poli Umum</option>
+                              <option value="Poli Gigi">Poli Gigi</option>
+                              <option value="Poli Penyakit Dalam" selected>Poli Penyakit Dalam</option>
+                              <option value="Poli Anak">Poli Anak</option>
+                              <option value="Poli Kandungan" selected>Poli Kandungan</option>
+                            {% endif %}
                           </select>
                         </div>
                       </div>
@@ -103,70 +128,13 @@
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-primary">Submit</button>
+                  <button type="submit" class="btn btn-success">Save</button>
                 </div>
               </form>
             </div>
             <!-- /.card -->
           </div>
           {% endblock input_form %}
-          <div class="col-lg-12 col-12">
-            <div class="card">
-              <div class="card-header">
-                <h2 class="card-title"><i class="fa fa-list" aria-hidden="true"></i> Daftar {{ nama }}</h2>
-                <div class="float-right">
-                  <button class="btn btn-success" id="button-export"><i class="fa fa-file-excel" aria-hidden="true"></i> Excel</button>
-                </div>
-              </div>
-              <!-- /.card-header -->
-              {% block table_list %}
-              <div class="card-body p-0">
-                <table class="table" id="dokter-table">
-                  <thead>
-                    <tr>
-                      <th style="width: 10px">#</th>
-                      <th>Nama</th>
-                      <th>Email</th>
-                      <th>Alamat</th>
-                      <th>No Telp</th>
-                      <th>Poli</th>
-                      <th class='noExport'>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% if dokter_list.detail %}
-                     <tr>
-                       <td colspan="6" class="text-center">no data</td>
-                     </tr>
-                    {% else %}
-                    {% for dokter in dokter_list %}
-                    <tr>
-                      <td>{{loop.index}}.</td>
-                      <td>{{dokter.nama}}</td>
-                      <td>{{dokter.user.username }}</td>
-                      <td>{{dokter.alamat}}</td>
-                      <td>{{dokter.no_hp}}</td>
-                      <td>{{dokter.poli}}</td>
-                      <td class="noExport">
-                        <a href="/admin/dokter/edit/{{ dokter.id }}" class="badge bg-secondary">
-                          <i class="fa fa-paint-brush" aria-hidden="true"></i>
-                          edit
-                        </a>
-                        <a href="/admin/dokter/delete/{{ dokter.id }}" class="badge bg-danger">
-                          <i class="fa fa-trash" aria-hidden="true"></i>
-                          delete
-                        </a>
-                      </td>
-                    </tr>
-                    {% endfor %}
-                    {% endif %}
-                  </tbody>
-                </table>
-              </div>
-              {% endblock table_list %}
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
         </div>
       </div><!-- /.container-fluid -->
     </section>

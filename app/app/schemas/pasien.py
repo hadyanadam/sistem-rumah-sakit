@@ -22,7 +22,7 @@ class PasienCreate(Pasien):
   no_hp: str = Query(..., max_length= 20)
   class Config:
     json_encoders = {
-      date: lambda v: v.strftime("%d %B, %Y"),
+      date: lambda v: f'{v.day}-{v.month}-{v.year}',
     }
 
   @classmethod

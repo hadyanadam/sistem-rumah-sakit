@@ -1,5 +1,6 @@
 import requests
 import json
+from typing import Optional
 from fastapi import APIRouter, Request, status, Depends, HTTPException, Response, Cookie, Form, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -11,6 +12,7 @@ from .core.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, ver
 
 from .models.rfid_temporary import RFIDTemporary
 from .schemas.user import UserRetrieve
+from .schemas.dokter import DokterUpdate
 from .crud.crud_user import crud_user
 from .crud.crud_dokter import crud_dokter
 from .crud.crud_pasien import crud_pasien
@@ -212,6 +214,44 @@ def pasien_create(
   response.set_cookie(key='success', value='Pasien berhasil dibuat')
   return response
 
+@router.get('/admin/pasien/edit/{id}')
+def edit_pasien(id: int, request: Request, db: Session = Depends(get_db_session), user: UserRetrieve = Depends(crud_user.get_current_user_login)):
+  pasien = crud_pasien.get(id=id, db=db)
+  context = {
+    'pasien': pasien,
+    'user': user,
+  }
+  return templates.TemplateResponse('pages/admin/edit-pasien.html', context)
+
+@router.post('/admin/pasien/edit/{id}')
+def edit_pasien_post(
+  id: int,
+  nama: Optional[str] = Form(...),
+  alamat: Optional[str] = Form(...),
+  no_hp: Optional[str] =Form(...),
+  tempat_lahir: Optional[str] = Form(...),
+  tanggal_lahir: Optional[str] = Form(...),
+  bpjs: Optional[bool] = Form(...),
+  db: Session = Depends(get_db_session),
+  user: UserRetrieve = Depends(crud_user.get_current_user_login),
+):
+  pasien = crud_pasien.get(id=id, db=db)
+  pasien_in = PasienUpdate(
+    nama=nama,
+    alamat=alamat,
+    no_hp=no_hp,
+    tempat_lahir=tempat_lahir,
+    tanggal_lahir=tanggal_lahir,
+    bpjs=bpjs
+  ).dict(exclude_unset=True)
+  pasien_update = crud_pasien.update(db=db, db_obj=pasien, obj_in=pasien_in)
+  response = RedirectResponse('/admin/pasien', status_code=status.HTTP_302_FOUND)
+  if pasien_update:
+    response.set_cookie(key='success', value='Update success')
+  else:
+    response.set_cookie(key='error', value='Gagal update')
+  return response
+
 @router.get('/rekam-medis/{pasien_id}', response_class=HTMLResponse, name='rekam-medis')
 def rekam_medis(request: Request, pasien_id: int, db: Session = Depends(get_db_session), access_token: str = Cookie(None), user: UserRetrieve = Depends(crud_user.get_current_user_login)):
   response = requests.get(url=f"http://localhost:8000/api/v1/rekam-medis/{pasien_id}", headers={
@@ -269,6 +309,61 @@ def daftar_periksa(
   }
   response = templates.TemplateResponse('pages/daftar-periksa.html', context)
   response.delete_cookie('success')
+  return response
+
+@router.get('/admin/dokter/edit/{id}')
+def edit_dokter(request: Request, id: int, db: Session = Depends(get_db_session), user: UserRetrieve = Depends(crud_user.get_current_user_login)):
+  dokter = crud_dokter.get(id=id, db=db)
+  context = {
+    "dokter": dokter,
+    "user": user,
+    "request": request,
+  }
+  return templates.TemplateResponse('pages/admin/edit-dokter.html', context)
+
+@router.post('/admin/dokter/edit/{id}')
+def edit_dokter_post(
+  id: int,
+  nama: Optional[str] = Form(...),
+  username: Optional[str] = Form(...),
+  alamat: Optional[str] = Form(...),
+  no_hp: Optional[str] =Form(...),
+  tempat_lahir: Optional[str] = Form(...),
+  tanggal_lahir: Optional[str] = Form(...),
+  poli: Optional[str] = Form(...),
+  db: Session = Depends(get_db_session),
+  user: UserRetrieve = Depends(crud_user.get_current_user_login)
+):
+  dokter = crud_dokter.get(id=id, db=db)
+  dokter_in = DokterUpdate(
+    nama=nama,
+    email=username,
+    alamat=alamat,
+    no_hp=no_hp,
+    tempat_lahir=tempat_lahir,
+    tanggal_lahir=tanggal_lahir,
+    poli=poli,
+  ).dict(exclude_unset=True)
+  dokter_update = crud_dokter.update(obj_in=dokter_in, db_obj=dokter, db=db)
+  response = RedirectResponse('/admin/dokter', status_code=status.HTTP_302_FOUND)
+  if dokter_update:
+    response.set_cookie(key='success', value='Update dokter berhasil')
+  else:
+    response.set_cookie(key='error', value='Gagal update dokter')
+  return response
+
+@router.get('/admin/dokter/delete/{id}')
+def delete_dokter(id: int, db: Session = Depends(get_db_session), user: UserRetrieve = Depends(crud_user.get_current_user_login)):
+  crud_dokter.remove(db=db, id=id)
+  response = RedirectResponse('/admin/dokter', status_code=status.HTTP_302_FOUND)
+  response.set_cookie(key='success', value='Delete Success')
+  return response
+
+@router.get('/admin/pasien/delete/{id}')
+def delete_dokter(id: int, db: Session = Depends(get_db_session), user: UserRetrieve = Depends(crud_user.get_current_user_login)):
+  crud_pasien.remove(db=db, id=id)
+  response = RedirectResponse('/admin/pasien', status_code=status.HTTP_302_FOUND)
+  response.set_cookie(key='success', value='Delete Success')
   return response
 
 @router.get('/404-not-found', name='404-not-found')

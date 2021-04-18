@@ -1,0 +1,98 @@
+{% extends 'pages/admin/user.html' %}
+
+
+{% block id_table %}
+'pasien-table','pasien'
+{% endblock id_table %}
+
+{% block input_form %}
+{% if user.is_admin %}
+
+<div class="col-12 col-lg-12">
+  <div class="card card-primary">
+    <div class="card-header">
+      <h3 class="card-title"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add {{ nama }}</h3>
+    </div>
+    <!-- /.card-header -->
+    <!-- form start -->
+  <form role="form" action="/admin/pasien" method="post">
+  <div class="card-body">
+  <div class="row">
+    <div class="col-6 col-lg-6">
+      <div class="form-group">
+        <label for="exampleInputEmail1">Nama {{ nama }}</label>
+        <input type="text" class="form-control" name="nama" placeholder="Masukan Nama" value="{{ pasien.nama }}">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Alamat</label>
+        <textarea type="text" class="form-control" row="3" name="alamat" placeholder="Masukan Alamat">{{ pasien.alamat}}</textarea>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputEmail1">No telp</label>
+        <input type="number" class="form-control" name="no_hp" placeholder="Masukan No Telp" value="{{ pasien.no_hp }}">
+      </div>
+    </div>
+      <div class="col-6 col-lg-6">
+      <label for="exampleInputEmail1">Tempat Tanggal Lahir</label>
+        <div class="row">
+          <div class="form-group col-6 col-lg-6">
+            <input type="text" class="form-control" name="tempat_lahir" placeholder="Masukan Tempat Lahir" value="{{ pasien.tempat_lahir }}">
+          </div>
+          <div class="form-group col-6 col-lg-6">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+              </div>
+              <input type="text" class="form-control" data-inputmask-alias="datetime" name='tanggal_lahir' data-inputmask-inputformat="yyyy-mm-dd" data-mask value="{{ pasien.tanggal_lahir }}">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>BPJS</label>
+          <select class="form-control" name="bpjs">
+            {% if bpjs %}
+              <option value=1 selected>Pakai</option>
+              <option value=0>Tidak Pakai</option>
+            {% else %}
+              <option value=1>Pakai</option>
+              <option value=0 selected>Tidak Pakai</option>
+            {% endif %}
+          </select>
+        </div>
+      </div>
+  </div>
+  <div class="card-footer">
+    <button type="submit" class="btn btn-success">Save</button>
+  </div>
+</form>
+</div>
+<!-- /.card -->
+</div>
+{% endif %}
+{% endblock input_form %}
+
+
+{% block addscript %}
+<script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+
+<script src="{{ url_for('static', path='plugins/moment/moment.min.js') }}"></script>
+<script src="{{ url_for('static', path='plugins/inputmask/min/jquery.inputmask.bundle.min.js') }}"></script>
+<script>
+  $(function () {
+    //Datemask dd/mm/yyyy
+    $('#datemask').inputmask('yyyy-mm-dd', { 'placeholder': 'yyyy-mm-dd' })
+    //Datemask2 mm/dd/yyyy
+    $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' })
+    //Money Euro
+    $('[data-mask]').inputmask()
+
+  })
+  $("#button-export").click(() => {
+    $("#pasien-table").table2excel({
+      exclude: ".noExport",
+      filename: "excel_sheet-name.xls"
+    });
+  })
+</script>
+
+{% endblock addscript %}
