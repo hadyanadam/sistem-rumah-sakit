@@ -28,6 +28,9 @@ async def create_antrian(rfid: str, input_data: AntrianCreate, db: Session= Depe
   pasien = crud_pasien.get_by_rfid(db=db, rfid=rfid)
   if pasien:
     input_data.pasien_id = pasien.id
+    antrian_sudah_ada = crud_antrian.get_by_pasien_antrian_aktif(db=db, pasien_id=pasien.id)
+    if antrian_sudah_ada:
+      raise HTTPException(status_code=status.HTTP_200_OK, detail='User sudah mengantri')
     new_antrian = crud_antrian.create(obj_in=input_data, db=db)
     pasien.no_antrian = new_antrian.no_antrian
     return pasien

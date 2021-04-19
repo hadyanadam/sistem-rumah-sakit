@@ -18,6 +18,10 @@ class CRUDAntrian(CRUDBase[Antrian, AntrianCreate, AntrianUpdate]):
       antrian = db.query(self.model).filter(self.model.aktif and self.model.poli == poli).order_by(self.model.no_antrian).limit(limit).offset(skip).all()
       return antrian
 
+  def get_by_pasien_antrian_aktif(self, db: Session, *, pasien_id: int) -> Antrian:
+      antrian = db.query(self.model).filter(self.model.pasien_id == pasien_id and self.model.aktif).first()
+      return antrian
+
   def create(self, db: Session, *, obj_in: AntrianCreate) -> Antrian:
       kemarin = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(days=1)
       last_antrian = db.query(self.model).filter(
