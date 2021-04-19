@@ -31,6 +31,7 @@ class PasienCreate(Pasien):
     return date.fromisoformat(v)
 
 class PasienUpdate(Pasien):
+  id: Optional[int]
   nama: Optional[str] = Query(..., max_length=60)
   alamat: Optional[str] = Query(..., max_length=130)
   tempat_lahir: Optional[str] = Query(..., max_length=20)

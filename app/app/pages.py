@@ -13,6 +13,7 @@ from .core.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, ver
 from .models.rfid_temporary import RFIDTemporary
 from .schemas.user import UserRetrieve
 from .schemas.dokter import DokterUpdate
+from .schemas.pasien import PasienUpdate
 from .crud.crud_user import crud_user
 from .crud.crud_dokter import crud_dokter
 from .crud.crud_pasien import crud_pasien
