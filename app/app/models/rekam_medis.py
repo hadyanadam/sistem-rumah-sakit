@@ -1,5 +1,5 @@
 import sqlalchemy as sa
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 import datetime
 
 from ..db.base_class import Base
@@ -14,8 +14,8 @@ class RekamMedis(Base):
   created_at = sa.Column(sa.DateTime(timezone=True), nullable=False, default=datetime.datetime.now)
   updated_at = sa.Column(sa.DateTime(timezone=True), nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now)
 
-  dokter = relationship('Dokter', backref='rekam_medis')
-  pasien = relationship('Pasien', backref='rekam_medis')
+  dokter = relationship('Dokter', backref=backref('rekam_medis', cascade='all,delete'))
+  pasien = relationship('Pasien', backref=backref('rekam_medis', cascade='all,delete'))
 
   def __repr__(self):
     return f'<RekamMedis {self.id}>'
