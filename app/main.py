@@ -48,4 +48,8 @@ app.include_router(DokterRouter, tags=['Dokter'])
 app.include_router(PasienRouter, tags=['Pasien'])
 app.include_router(RekamMedisRouter, tags=['RekamMedis'])
 app.include_router(AntrianRouter, tags=['Antrian'])
-app.include_router(PagesRouter, include_in_schema=False,default_response_class=HTMLResponse)
+app.include_router(
+    PagesRouter,
+    include_in_schema=False,
+    default_response_class=HTMLResponse
+)

@@ -178,7 +178,6 @@ def pasien(request: Request, access_token: str = Cookie(None), success: str = Co
       "rfid": rfid,
       "success": success,
     })
-  print(pasien[0])
   response.delete_cookie('success')
   return response
 

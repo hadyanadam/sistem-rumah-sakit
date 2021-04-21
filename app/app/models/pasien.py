@@ -14,7 +14,7 @@ class Pasien(Base):
   no_hp = sa.Column(sa.String(20), nullable=True)
   bpjs = sa.Column(sa.Boolean, nullable=False, default=False)
   rfid = sa.Column(sa.String(60), nullable=True)
-  antrian = relationship('Antrian', backref='pasien')
+  antrian = relationship('Antrian', backref='pasien', cascade="all,delete")
 
   created_at = sa.Column(sa.DateTime(timezone=True), nullable=False, default=datetime.datetime.now)
   updated_at = sa.Column(sa.DateTime(timezone=True), nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now)
