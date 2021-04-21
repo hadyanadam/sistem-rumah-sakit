@@ -12,14 +12,31 @@
             <h1 class="m-0 text-dark">Antrian</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item active">Antrian</li>
-            </ol>
+            {% if user.is_admin %}
+            <div class="float-sm-right">
+              <button class="btn btn-danger" onclick="resetAntrian()">
+                <i class="fa fa-spinner" aria-hidden="true"></i>
+                Reset Antrian
+              </button>
+            {% endif %}
+            </div>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content-header -->
+
+    <script>
+      const resetAntrian = async () => {
+        console.log('reset')
+        const response = await fetch('/reset-antrian', {
+          method: 'POST'
+        })
+        if(response.ok){
+          window.location.href ='/antrian'
+        }
+      }
+    </script>
 
     <!-- Main content -->
     <section class="content">
@@ -105,16 +122,24 @@
               <div class="card-body p-0">
                 <table class="table table-sm">
                   <tbody>
+                    {% if antrian.antrian|length != 1 and antrian.antrian|length != 0 %}
                     {% for queue in antrian.antrian %}
-                      {% if loop.index != 1 %}
-                        <tr>
-                          <td class='d-flex justify-content-between'>
-                            <h1 class="text-left">{{ queue.no_antrian }}.</h1>
-                            <h1 class="text-right">{{ queue.pasien.nama  }}</h1>
-                          </td>
-                        </tr>
-                      {% endif %}
+                    {% if loop.index != 1 %}
+                    <tr>
+                      <td class='d-flex justify-content-between'>
+                        <h1 class="text-left">{{ queue.no_antrian }}.</h1>
+                        <h1 class="text-right">{{ queue.pasien.nama  }}</h1>
+                      </td>
+                    </tr>
+                    {% endif %}
                     {% endfor %}
+                    {% else %}
+                    <tr>
+                      <td>
+                        <h1 class="text-center">Tidak Ada</h1>
+                      </td>
+                    </tr>
+                    {% endif %}
                   </tbody>
                 </table>
               </div>

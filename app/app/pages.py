@@ -1,7 +1,7 @@
 import requests
 import json
 from typing import Optional
-from fastapi import APIRouter, Request, status, Depends, HTTPException, Response, Cookie, Form, Query
+from fastapi import APIRouter, Request, status, Depends, HTTPException, Response, Cookie, Form, Query, Body
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from starlette.routing import Route, Mount
@@ -14,6 +14,7 @@ from .models.rfid_temporary import RFIDTemporary
 from .schemas.user import UserRetrieve
 from .schemas.dokter import DokterUpdate
 from .schemas.pasien import PasienUpdate
+from .models.antrian import Antrian
 from .crud.crud_user import crud_user
 from .crud.crud_dokter import crud_dokter
 from .crud.crud_pasien import crud_pasien
@@ -218,7 +219,6 @@ def pasien_create(
 @router.get('/admin/pasien/edit/{id}')
 def edit_pasien(id: int, request: Request, db: Session = Depends(get_db_session), user: UserRetrieve = Depends(crud_user.get_current_user_login)):
   pasien = crud_pasien.get(id=id, db=db)
-  print(pasien)
   context = {
     'request': request,
     'pasien': pasien,
@@ -262,8 +262,6 @@ def rekam_medis(request: Request, pasien_id: int, db: Session = Depends(get_db_s
   })
   rekam_medis = response.json()
   pasien = crud_pasien.get(id=pasien_id, db=db)
-  print(rekam_medis)
-  print(pasien)
   return templates.TemplateResponse(
     'pages/rekam-medis.html', {
       "request": request,
@@ -368,6 +366,13 @@ def delete_dokter(id: int, db: Session = Depends(get_db_session), user: UserRetr
   response = RedirectResponse('/admin/pasien', status_code=status.HTTP_302_FOUND)
   response.set_cookie(key='success', value='Delete Success')
   return response
+
+@router.post('/reset-antrian')
+def reset_antrian(db: Session = Depends(get_db_session)):
+  delete_all = Antrian.__table__.delete().where(Antrian.aktif)
+  db.execute(delete_all)
+  db.commit()
+  # return RedirectResponse('/antrian', status_code=status.HTTP_302_FOUND)
 
 @router.get('/404-not-found', name='404-not-found')
 def redirect_404_not_found(request: Request):
