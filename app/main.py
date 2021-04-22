@@ -33,7 +33,7 @@ def init_data():
     # seed_dokter(iter=10, db=db)
     # seed_pasien(iter=10, db=db)
     # seed_antrian(iter=5, db=db, range_pasien_id=[11, 20])
-    # seed_rekam_medis(iter=50, db=db, range_pasien_id=[2,11], range_dokter_id=[1,10])
+    # seed_rekam_medis(iter=50, db=db, range_pasien_id=[11,20], range_dokter_id=[3,10])
 
 app.add_middleware(
     CORSMiddleware,

@@ -108,15 +108,15 @@
                   <tbody>
                     {% if rekam_medis.detail %}
                     <tr>
-                      <td colspan="2" class='text-center'>
+                      <td colspan="5" class='text-center'>
                         no data
                       </td>
                     </tr>
                     {% else %}
                       {% for rm in rekam_medis %}
-                      <tr>
+                      <tr rowspan="3">
                         <td>{{ loop.index }}</td>
-                        <td rowspan='3'>{{ rm.keluhan }}</td>
+                        <td>{{ rm.keluhan }}</td>
                         <td>{{ rm.created_at }}</td>
                         <td>
                           <a href="" class="badge badge-primary">

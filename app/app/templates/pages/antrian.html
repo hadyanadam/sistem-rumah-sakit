@@ -11,16 +11,16 @@
           <div class="col-sm-6">
             <h1 class="m-0 text-dark">Antrian</h1>
           </div><!-- /.col -->
+          {% if user.is_admin %}
           <div class="col-sm-6">
-            {% if user.is_admin %}
             <div class="float-sm-right">
               <button class="btn btn-danger" onclick="resetAntrian()">
                 <i class="fa fa-spinner" aria-hidden="true"></i>
                 Reset Antrian
               </button>
-            {% endif %}
             </div>
           </div><!-- /.col -->
+          {% endif %}
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
     </div>
